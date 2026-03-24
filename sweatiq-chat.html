@@ -225,7 +225,7 @@ async function sendMsg(override) {
     });
     const data = await res.json();
     removeTyping(tid);
-    const reply = (data.content || []).map(b => b.text || '').join('') || 'Something went wrong. Try again.';
+    const reply = data.reply || (data.content || []).map(b => b.text || '').join('') || 'Something went wrong. Try again.';
     history.push({ role: 'assistant', content: reply });
     appendMsg('ai', reply);
   } catch(err) {

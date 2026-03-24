@@ -162,8 +162,8 @@ app.post('/api/create-checkout', async (req, res) => {
       payment_method_types: ['card'],
       mode: 'subscription',
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${process.env.FRONTEND_URL}/fitness-ai.html?session_id={CHECKOUT_SESSION_ID}&upgraded=true`,
-      cancel_url: `${process.env.FRONTEND_URL}/pricing.html`,
+      success_url: `${process.env.FRONTEND_URL}/sweatiq-chat.html?upgraded=true`,
+      cancel_url: `${process.env.FRONTEND_URL}/sweatiq-pricing.html`,
       metadata: { sessionId: sessionId || 'unknown', plan },
       subscription_data: {
         trial_period_days: 7 // 7-day free trial

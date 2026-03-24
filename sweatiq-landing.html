@@ -1,308 +1,271 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="background:#0d0d0d;">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SweatIQ — The AI Fitness Coach That Actually Works</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=Space+Mono&display=swap" rel="stylesheet">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0d0d0d">
+<title>SweatIQ — AI Fitness Coach</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@400;500;600&family=Space+Mono&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #0a0a0a; --surface: #111; --border: #1e1e1e;
-    --accent: #c8f135; --accent-dim: rgba(200,241,53,0.08); --accent-glow: rgba(200,241,53,0.3);
-    --text: #f0f0f0; --muted: #555; --muted2: #888;
-  }
-  html { scroll-behavior: smooth; }
-  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0d0d0d;
+  --surface: #161616;
+  --card: #1e1e1e;
+  --border: #2e2e2e;
+  --accent: #c8f135;
+  --accent-dim: rgba(200,241,53,0.12);
+  --accent-glow: rgba(200,241,53,0.2);
+  --text: #ffffff;
+  --text2: #e0e0d8;
+  --text3: #b0b0a8;
+  --muted: #707068;
+}
+html {
+  background: #0d0d0d !important;
+  color-scheme: dark;
+  scroll-behavior: smooth;
+}
+body {
+  background: #0d0d0d !important;
+  color: #ffffff;
+  font-family: 'Outfit', sans-serif;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
 
-  /* NAV */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 18px 48px;
-    background: rgba(10,10,10,0.85); backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-  }
-  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.7rem; letter-spacing: 0.1em; color: var(--accent); }
-  .nav-links { display: flex; gap: 32px; }
-  .nav-links a { font-size: 0.8rem; color: var(--muted2); text-decoration: none; letter-spacing: 0.05em; transition: color 0.15s; }
-  .nav-links a:hover { color: var(--text); }
-  .nav-cta {
-    background: var(--accent); color: #0a0a0a; font-size: 0.78rem; font-weight: 600;
-    padding: 9px 20px; border-radius: 8px; text-decoration: none; letter-spacing: 0.05em;
-    transition: all 0.15s; font-family: 'Space Mono', monospace;
-  }
-  .nav-cta:hover { background: #d4fc40; transform: translateY(-1px); }
+/* FORCE DARK ON ALL ELEMENTS */
+* { color-scheme: dark; }
 
-  /* HERO */
-  .hero {
-    min-height: 100vh; display: flex; align-items: center; justify-content: center;
-    padding: 120px 48px 80px; position: relative; overflow: hidden;
-    text-align: center; flex-direction: column; gap: 28px;
-  }
-  .hero-bg {
-    position: absolute; inset: 0; z-index: 0;
-    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(200,241,53,0.07) 0%, transparent 70%);
-  }
-  .hero-grid {
-    position: absolute; inset: 0; z-index: 0; opacity: 0.04;
-    background-image: linear-gradient(var(--accent) 1px, transparent 1px), linear-gradient(90deg, var(--accent) 1px, transparent 1px);
-    background-size: 60px 60px;
-  }
-  .hero-tag {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--accent-dim); border: 1px solid rgba(200,241,53,0.2);
-    padding: 6px 14px; border-radius: 100px;
-    font-size: 0.7rem; color: var(--accent); font-family: 'Space Mono', monospace;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    animation: fadeUp 0.6s ease both;
-    position: relative; z-index: 1;
-  }
-  .hero-tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
-  .hero h1 {
-    font-family: 'Bebas Neue', sans-serif; font-size: clamp(4rem, 10vw, 8rem);
-    letter-spacing: 0.03em; line-height: 0.92;
-    position: relative; z-index: 1;
-    animation: fadeUp 0.6s 0.1s ease both;
-  }
-  .hero h1 .accent { color: var(--accent); }
-  .hero h1 .outline {
-    -webkit-text-stroke: 1px rgba(200,241,53,0.4);
-    color: transparent;
-  }
-  .hero-sub {
-    font-size: 1.05rem; color: var(--muted2); max-width: 520px; line-height: 1.7;
-    position: relative; z-index: 1;
-    animation: fadeUp 0.6s 0.2s ease both;
-  }
-  .hero-actions {
-    display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap;
-    position: relative; z-index: 1;
-    animation: fadeUp 0.6s 0.3s ease both;
-  }
-  .btn-primary {
-    background: var(--accent); color: #0a0a0a; font-weight: 600; font-size: 0.88rem;
-    padding: 14px 28px; border-radius: 10px; text-decoration: none; letter-spacing: 0.04em;
-    transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
-    font-family: 'Space Mono', monospace;
-    box-shadow: 0 0 30px var(--accent-glow);
-  }
-  .btn-primary:hover { background: #d4fc40; transform: translateY(-2px); box-shadow: 0 0 50px var(--accent-glow); }
-  .btn-secondary {
-    background: transparent; color: var(--muted2); font-size: 0.88rem;
-    padding: 14px 28px; border-radius: 10px; text-decoration: none; letter-spacing: 0.04em;
-    border: 1px solid var(--border); transition: all 0.2s;
-    font-family: 'Space Mono', monospace;
-  }
-  .btn-secondary:hover { border-color: var(--muted); color: var(--text); }
-  .hero-social {
-    font-size: 0.72rem; color: var(--muted); font-family: 'Space Mono', monospace;
-    position: relative; z-index: 1;
-    animation: fadeUp 0.6s 0.4s ease both;
-  }
-  .hero-social span { color: var(--accent); }
+/* TABS */
+.tabs {
+  position: sticky; top: 0; z-index: 100;
+  background: #0d0d0d !important;
+  border-bottom: 1px solid var(--border);
+}
+.tabs-inner {
+  display: grid; grid-template-columns: auto 1fr auto;
+  align-items: center; padding: 0 24px;
+  max-width: 1200px; margin: 0 auto;
+}
+.tabs-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.7rem; letter-spacing: 0.12em; color: var(--accent) !important; text-decoration: none; padding: 14px 0; display: block; }
+.tabs-nav { display: flex; justify-content: center; gap: 8px; }
+.tab {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 13px 24px; text-decoration: none; color: var(--text3) !important;
+  font-size: 0.72rem; font-family: 'Space Mono', monospace; letter-spacing: 0.1em;
+  text-transform: uppercase; transition: color 0.15s;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+.tab-icon { font-size: 1.2rem; }
+.tab.active { color: var(--accent) !important; border-bottom-color: var(--accent); }
+.tabs-cta { background: var(--accent); color: #0d0d0d !important; font-size: 0.72rem; font-weight: 700; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-family: 'Space Mono', monospace; white-space: nowrap; }
 
-  /* MARQUEE */
-  .marquee-wrap { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow: hidden; padding: 14px 0; background: var(--surface); }
-  .marquee { display: flex; gap: 48px; animation: scroll 30s linear infinite; white-space: nowrap; }
-  .marquee-item { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.15em; color: var(--muted); display: flex; align-items: center; gap: 48px; }
-  .marquee-item span { color: var(--accent); }
-  @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+/* HERO */
+.hero {
+  min-height: 92vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 60px 24px 70px; text-align: center; gap: 20px;
+  background: #0d0d0d !important; position: relative;
+}
+.hero-badge {
+  position: relative; z-index: 1;
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(200,241,53,0.15); border: 1px solid rgba(200,241,53,0.3);
+  padding: 6px 14px; border-radius: 100px;
+  font-size: 0.63rem; color: var(--accent) !important; font-family: 'Space Mono', monospace;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.hero-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-  /* FEATURES */
-  .section { padding: 100px 48px; max-width: 1100px; margin: 0 auto; }
-  .section-label { font-size: 0.62rem; color: var(--accent); font-family: 'Space Mono', monospace; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px; }
-  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.5rem, 5vw, 4rem); letter-spacing: 0.04em; line-height: 1; margin-bottom: 16px; }
-  .section-title span { color: var(--accent); }
-  .section-sub { font-size: 0.95rem; color: var(--muted2); max-width: 480px; line-height: 1.7; margin-bottom: 60px; }
+.hero h1 {
+  position: relative; z-index: 1;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3.5rem, 18vw, 9rem);
+  letter-spacing: 0.02em; line-height: 0.88;
+  color: #ffffff !important;
+}
+.hero h1 .lime { color: var(--accent) !important; }
+.hero h1 .ghost {
+  -webkit-text-stroke: 2px rgba(200,241,53,0.5);
+  color: transparent !important;
+}
+.hero-desc {
+  position: relative; z-index: 1;
+  font-size: clamp(0.95rem, 3.5vw, 1.1rem);
+  color: #e0e0d8 !important; max-width: 420px; line-height: 1.75;
+}
+.hero-btns { position: relative; z-index: 1; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 380px; }
+.btn-lime { background: var(--accent); color: #0d0d0d !important; font-weight: 700; font-size: 0.9rem; padding: 15px 26px; border-radius: 10px; text-decoration: none; font-family: 'Space Mono', monospace; transition: all 0.2s; flex: 1; text-align: center; display: block; }
+.btn-lime:hover { background: #d6ff3d; }
+.btn-ghost { background: rgba(255,255,255,0.08); color: #e0e0d8 !important; font-size: 0.9rem; padding: 15px 20px; border-radius: 10px; text-decoration: none; border: 1px solid #3a3a3a; transition: all 0.2s; font-family: 'Space Mono', monospace; flex: 1; text-align: center; display: block; }
+.btn-ghost:hover { border-color: #888; color: #fff !important; }
+.hero-proof { position: relative; z-index: 1; font-size: 0.75rem; color: #b0b0a8 !important; font-family: 'Space Mono', monospace; }
+.hero-proof b { color: var(--accent) !important; }
 
-  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
-  .feat {
-    background: var(--surface); padding: 32px 28px; position: relative; overflow: hidden;
-    transition: all 0.2s;
-  }
-  .feat:hover { background: #141414; }
-  .feat::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: transparent; transition: background 0.2s; }
-  .feat:hover::before { background: var(--accent); }
-  .feat-icon { font-size: 1.8rem; margin-bottom: 16px; }
-  .feat-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 0.06em; margin-bottom: 10px; }
-  .feat-desc { font-size: 0.82rem; color: var(--muted2); line-height: 1.7; }
+/* TICKER */
+.ticker { overflow: hidden; padding: 12px 0; background: var(--surface) !important; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.ticker-track { display: flex; gap: 40px; animation: roll 24s linear infinite; white-space: nowrap; }
+.ticker-item { font-family: 'Bebas Neue', sans-serif; font-size: 0.88rem; letter-spacing: 0.15em; color: #888 !important; display: flex; align-items: center; gap: 40px; }
+.ticker-item b { color: var(--accent) !important; }
+@keyframes roll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
 
-  /* HOW IT WORKS */
-  .how-section { padding: 100px 48px; background: var(--surface); }
-  .how-inner { max-width: 1100px; margin: 0 auto; }
-  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 60px; position: relative; }
-  .steps::before {
-    content: ''; position: absolute; top: 28px; left: 10%; right: 10%; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  }
-  .step { text-align: center; padding: 0 20px; position: relative; }
-  .step-num {
-    width: 56px; height: 56px; border-radius: 50%;
-    background: var(--bg); border: 1px solid var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--accent);
-    margin: 0 auto 20px; position: relative; z-index: 1;
-    box-shadow: 0 0 20px var(--accent-glow);
-  }
-  .step-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.06em; margin-bottom: 8px; }
-  .step-desc { font-size: 0.78rem; color: var(--muted2); line-height: 1.6; }
+/* SECTIONS */
+.section { padding: 64px 24px; max-width: 1100px; margin: 0 auto; background: transparent; }
+.sec-eyebrow { font-size: 0.6rem; color: var(--accent) !important; font-family: 'Space Mono', monospace; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px; }
+.sec-heading { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2rem, 7vw, 3.8rem); letter-spacing: 0.04em; line-height: 1; margin-bottom: 10px; color: #ffffff !important; }
+.sec-heading b { color: var(--accent) !important; }
+.sec-body { font-size: 0.92rem; color: #d0d0c8 !important; max-width: 460px; line-height: 1.75; margin-bottom: 40px; }
 
-  /* TESTIMONIALS */
-  .testimonials { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 60px; }
-  .testi {
-    background: var(--surface); border: 1px solid var(--border); padding: 28px 24px; border-radius: 2px;
-    position: relative;
-  }
-  .testi::before { content: '"'; font-family: 'Bebas Neue', sans-serif; font-size: 4rem; color: var(--accent); opacity: 0.2; line-height: 1; position: absolute; top: 12px; right: 20px; }
-  .testi-text { font-size: 0.85rem; color: var(--muted2); line-height: 1.75; margin-bottom: 20px; }
-  .testi-author { display: flex; align-items: center; gap: 10px; }
-  .testi-av { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #7aaa00); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: #0a0a0a; font-family: 'Space Mono', monospace; }
-  .testi-name { font-size: 0.8rem; font-weight: 500; }
-  .testi-meta { font-size: 0.65rem; color: var(--muted); font-family: 'Space Mono', monospace; }
-  .stars { color: var(--accent); font-size: 0.75rem; margin-bottom: 12px; }
+/* FEATURES */
+.feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+.feat { background: var(--surface) !important; padding: 26px 22px; position: relative; }
+.feat::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: transparent; transition: background 0.2s; }
+.feat:hover::after { background: var(--accent); }
+.feat-emoji { font-size: 1.6rem; margin-bottom: 14px; display: block; }
+.feat-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.15rem; letter-spacing: 0.06em; margin-bottom: 8px; color: #ffffff !important; }
+.feat-body { font-size: 0.84rem; color: #d0d0c8 !important; line-height: 1.7; }
 
-  /* PRICING CTA */
-  .cta-section {
-    padding: 100px 48px; text-align: center;
-    background: radial-gradient(ellipse 70% 80% at 50% 100%, rgba(200,241,53,0.06) 0%, transparent 70%);
-  }
-  .cta-inner { max-width: 600px; margin: 0 auto; }
-  .cta-section .section-title { font-size: clamp(3rem, 6vw, 5rem); }
+/* HOW */
+.how-bg { padding: 64px 24px; background: var(--surface) !important; }
+.how-inner { max-width: 1100px; margin: 0 auto; }
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 40px; }
+.step { text-align: center; padding: 0 8px; }
+.step-num { width: 50px; height: 50px; border-radius: 50%; background: #0d0d0d !important; border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: var(--accent) !important; margin: 0 auto 14px; box-shadow: 0 0 16px rgba(200,241,53,0.2); }
+.step-title { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.06em; margin-bottom: 7px; color: #ffffff !important; }
+.step-body { font-size: 0.8rem; color: #d0d0c8 !important; line-height: 1.65; }
 
-  /* FOOTER */
-  footer { border-top: 1px solid var(--border); padding: 32px 48px; display: flex; align-items: center; justify-content: space-between; }
-  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: var(--accent); letter-spacing: 0.1em; }
-  .footer-links { display: flex; gap: 24px; }
-  .footer-links a { font-size: 0.75rem; color: var(--muted); text-decoration: none; transition: color 0.15s; }
-  .footer-links a:hover { color: var(--text); }
-  .footer-copy { font-size: 0.7rem; color: var(--muted); font-family: 'Space Mono', monospace; }
+/* TESTIMONIALS */
+.testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 40px; }
+.testi { background: var(--surface) !important; border: 1px solid var(--border); padding: 22px 20px; position: relative; }
+.testi::before { content: '"'; font-family: 'Bebas Neue', sans-serif; font-size: 3.5rem; color: var(--accent); opacity: 0.2; line-height: 1; position: absolute; top: 8px; right: 14px; pointer-events: none; }
+.stars { color: var(--accent) !important; font-size: 0.75rem; margin-bottom: 8px; letter-spacing: 2px; }
+.testi-quote { font-size: 0.86rem; color: #d0d0c8 !important; line-height: 1.75; margin-bottom: 16px; }
+.testi-person { display: flex; align-items: center; gap: 10px; }
+.testi-av { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #8ab800); display: flex; align-items: center; justify-content: center; font-size: 0.62rem; font-weight: 700; color: #0d0d0d !important; font-family: 'Space Mono', monospace; flex-shrink: 0; }
+.testi-name { font-size: 0.82rem; font-weight: 600; color: #ffffff !important; }
+.testi-meta { font-size: 0.63rem; color: #b0b0a8 !important; font-family: 'Space Mono', monospace; }
 
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+/* CTA */
+.cta-section { padding: 80px 24px; text-align: center; background: #0d0d0d !important; }
+.cta-inner { max-width: 520px; margin: 0 auto; }
+.cta-inner .sec-body { margin: 12px auto 28px; text-align: center; }
 
-  @media (max-width: 768px) {
-    nav { padding: 16px 20px; }
-    .nav-links { display: none; }
-    .hero { padding: 100px 20px 60px; }
-    .section, .how-section, .cta-section { padding: 60px 20px; }
-    .features-grid { grid-template-columns: 1fr; }
-    .steps { grid-template-columns: repeat(2, 1fr); gap: 32px; }
-    .steps::before { display: none; }
-    .testimonials { grid-template-columns: 1fr; }
-    footer { flex-direction: column; gap: 16px; text-align: center; }
-  }
+/* FOOTER */
+footer { border-top: 1px solid var(--border); padding: 28px 24px; background: #0d0d0d !important; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; }
+.footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: var(--accent) !important; letter-spacing: 0.12em; }
+.footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+.footer-links a { font-size: 0.74rem; color: #b0b0a8 !important; text-decoration: none; transition: color 0.15s; }
+.footer-links a:hover { color: #fff !important; }
+.footer-copy { font-size: 0.64rem; color: #707068 !important; font-family: 'Space Mono', monospace; width: 100%; }
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .feat-grid { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: repeat(2, 1fr); }
+  .testi-grid { grid-template-columns: 1fr; }
+  .tabs-cta { display: none; }
+  .hero-btns { flex-direction: column; }
+  .btn-lime, .btn-ghost { flex: none; width: 100%; }
+}
+@media (max-width: 480px) {
+  .tab { padding: 11px 10px; font-size: 0.55rem; }
+  .tab-icon { font-size: 0.88rem; }
+}
 </style>
 </head>
 <body>
 
-<nav>
-  <div class="nav-logo">SweatIQ</div>
-  <div class="nav-links">
-    <a href="#features">Features</a>
-    <a href="#how">How it works</a>
-    <a href="#testimonials">Reviews</a>
-    <a href="pricing.html">Pricing</a>
+<div class="tabs">
+  <div class="tabs-inner">
+    <a href="sweatiq-landing.html" class="tabs-logo">SWEATIQ</a>
+    <nav class="tabs-nav">
+      <a href="sweatiq-landing.html" class="tab active"><span class="tab-icon">🏠</span>Home</a>
+      <a href="sweatiq-chat.html" class="tab"><span class="tab-icon">💬</span>Coach</a>
+      <a href="sweatiq-pricing.html" class="tab"><span class="tab-icon">⚡</span>Plans</a>
+    </nav>
+    <a href="sweatiq-chat.html" class="tabs-cta">START FREE →</a>
   </div>
-  <a href="pricing.html" class="nav-cta">START FREE →</a>
-</nav>
+</div>
 
-<!-- HERO -->
 <section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-grid"></div>
-  <div class="hero-tag">AI-Powered Personal Training</div>
-  <h1>
-    TRAIN<br>
-    <span class="accent">SMARTER.</span><br>
-    <span class="outline">PUSH</span> HARDER.
-  </h1>
-  <p class="hero-sub">Your personal AI fitness coach. Custom workout plans, nutrition guidance, and real-time coaching — available 24/7, no gym required.</p>
-  <div class="hero-actions">
-    <a href="sweatiq-chat.html" class="btn-primary">Start Training Free →</a>
-    <a href="#how" class="btn-secondary">See How It Works</a>
+  <div class="hero-badge">AI-Powered Personal Training</div>
+  <h1>TRAIN<br><span class="lime">SMARTER.</span><br><span class="ghost">PUSH</span> HARDER.</h1>
+  <p class="hero-desc">Your personal AI fitness coach. Custom workout plans, real nutrition guidance, and coaching available 24/7 — no gym required.</p>
+  <div class="hero-btns">
+    <a href="sweatiq-chat.html" class="btn-lime">Start Training Free →</a>
+    <a href="#how" class="btn-ghost">How It Works</a>
   </div>
-  <p class="hero-social">Join <span>12,400+</span> athletes already training with SweatIQ</p>
+  <p class="hero-proof">Join <b>12,400+</b> athletes already training with SweatIQ</p>
 </section>
 
-<!-- MARQUEE -->
-<div class="marquee-wrap">
-  <div class="marquee">
-    <div class="marquee-item">WORKOUT PLANS <span>✦</span> MEAL PLANNING <span>✦</span> FAT LOSS <span>✦</span> MUSCLE BUILDING <span>✦</span> HIIT TRAINING <span>✦</span> RECOVERY COACHING <span>✦</span> MACRO TRACKING <span>✦</span> STRENGTH PROGRAMS <span>✦</span></div>
-    <div class="marquee-item">WORKOUT PLANS <span>✦</span> MEAL PLANNING <span>✦</span> FAT LOSS <span>✦</span> MUSCLE BUILDING <span>✦</span> HIIT TRAINING <span>✦</span> RECOVERY COACHING <span>✦</span> MACRO TRACKING <span>✦</span> STRENGTH PROGRAMS <span>✦</span></div>
+<div class="ticker">
+  <div class="ticker-track">
+    <div class="ticker-item">WORKOUT PLANS <b>✦</b> MEAL PLANNING <b>✦</b> FAT LOSS <b>✦</b> MUSCLE BUILDING <b>✦</b> HIIT TRAINING <b>✦</b> RECOVERY COACHING <b>✦</b> MACRO TRACKING <b>✦</b> STRENGTH PROGRAMS <b>✦</b></div>
+    <div class="ticker-item">WORKOUT PLANS <b>✦</b> MEAL PLANNING <b>✦</b> FAT LOSS <b>✦</b> MUSCLE BUILDING <b>✦</b> HIIT TRAINING <b>✦</b> RECOVERY COACHING <b>✦</b> MACRO TRACKING <b>✦</b> STRENGTH PROGRAMS <b>✦</b></div>
   </div>
 </div>
 
-<!-- FEATURES -->
 <section class="section" id="features">
-  <div class="section-label">What You Get</div>
-  <h2 class="section-title">EVERYTHING A COACH<br><span>GIVES YOU</span></h2>
-  <p class="section-sub">SweatIQ combines elite personal training knowledge with the power of AI — personalized to you, always available.</p>
-  <div class="features-grid">
-    <div class="feat"><div class="feat-icon">🏋️</div><div class="feat-title">Custom Workout Plans</div><div class="feat-desc">Tell SweatIQ your goal, equipment, and schedule. Get a full program with sets, reps, rest times, and progression.</div></div>
-    <div class="feat"><div class="feat-icon">🥗</div><div class="feat-title">Nutrition & Meal Plans</div><div class="feat-desc">High-protein meal plans, calorie targets, macro breakdowns — tailored to your body and dietary preferences.</div></div>
-    <div class="feat"><div class="feat-icon">🔥</div><div class="feat-title">HIIT & Cardio Sessions</div><div class="feat-desc">From beginner LISS to advanced interval training. SweatIQ builds cardio into your program based on your goals.</div></div>
-    <div class="feat"><div class="feat-icon">📈</div><div class="feat-title">Progress Coaching</div><div class="feat-desc">Hit a plateau? SweatIQ adjusts your plan, gives technique tips, and keeps you progressing every week.</div></div>
-    <div class="feat"><div class="feat-icon">🧘</div><div class="feat-title">Recovery & Mobility</div><div class="feat-desc">Stretching routines, deload advice, sleep optimization — because recovery is where gains actually happen.</div></div>
-    <div class="feat"><div class="feat-icon">⚡</div><div class="feat-title">24/7 Instant Answers</div><div class="feat-desc">Ask anything. Form questions, supplement advice, motivation — SweatIQ responds instantly, any time of day.</div></div>
+  <p class="sec-eyebrow">What You Get</p>
+  <h2 class="sec-heading">EVERYTHING A COACH<br><b>GIVES YOU</b></h2>
+  <p class="sec-body">SweatIQ delivers elite personal training knowledge through AI — fully personalized, always available, no appointment needed.</p>
+  <div class="feat-grid">
+    <div class="feat"><span class="feat-emoji">🏋️</span><div class="feat-title">Custom Workout Plans</div><p class="feat-body">Tell SweatIQ your goal, available equipment, and schedule. Get a full program with sets, reps, rest times, and weekly progression.</p></div>
+    <div class="feat"><span class="feat-emoji">🥗</span><div class="feat-title">Nutrition & Meal Plans</div><p class="feat-body">High-protein meal plans, calorie targets, and macro breakdowns — tailored to your body and dietary preferences.</p></div>
+    <div class="feat"><span class="feat-emoji">🔥</span><div class="feat-title">HIIT & Cardio</div><p class="feat-body">From beginner steady-state to advanced intervals. SweatIQ designs cardio sessions that complement your strength work.</p></div>
+    <div class="feat"><span class="feat-emoji">📈</span><div class="feat-title">Progress Coaching</div><p class="feat-body">Hit a plateau? SweatIQ diagnoses the issue, adjusts your program, and keeps results coming week after week.</p></div>
+    <div class="feat"><span class="feat-emoji">🧘</span><div class="feat-title">Recovery & Mobility</div><p class="feat-body">Targeted stretching, deload week planning, and sleep optimization — because recovery is where the real gains happen.</p></div>
+    <div class="feat"><span class="feat-emoji">⚡</span><div class="feat-title">24/7 Instant Answers</div><p class="feat-body">Form questions, supplement guidance, motivation — SweatIQ responds instantly, any time of day.</p></div>
   </div>
 </section>
 
-<!-- HOW IT WORKS -->
-<div class="how-section" id="how">
+<div class="how-bg" id="how">
   <div class="how-inner">
-    <div class="section-label">The Process</div>
-    <h2 class="section-title">HOW <span>SweatIQ</span> WORKS</h2>
+    <p class="sec-eyebrow">The Process</p>
+    <h2 class="sec-heading">HOW <b>SWEATIQ</b> WORKS</h2>
     <div class="steps">
-      <div class="step"><div class="step-num">01</div><div class="step-title">Tell SweatIQ Your Goal</div><div class="step-desc">Lose weight, build muscle, run faster — describe your goal in plain English.</div></div>
-      <div class="step"><div class="step-num">02</div><div class="step-num-inner"></div><div class="step-title">Get Your Plan</div><div class="step-desc">SweatIQ generates a complete workout and nutrition plan tailored to you in seconds.</div></div>
-      <div class="step"><div class="step-num">03</div><div class="step-title">Train & Ask</div><div class="step-desc">Follow your plan. Ask SweatIQ anything along the way — it's like texting your personal trainer.</div></div>
-      <div class="step"><div class="step-num">04</div><div class="step-title">Evolve & Improve</div><div class="step-desc">As you progress, SweatIQ adjusts your plan to keep results coming.</div></div>
+      <div class="step"><div class="step-num">01</div><div class="step-title">Tell Us Your Goal</div><p class="step-body">Lose weight, build muscle, run faster — describe what you want in plain language.</p></div>
+      <div class="step"><div class="step-num">02</div><div class="step-title">Get Your Plan</div><p class="step-body">SweatIQ builds a complete, personalized workout and nutrition program in seconds.</p></div>
+      <div class="step"><div class="step-num">03</div><div class="step-title">Train & Ask</div><p class="step-body">Follow your plan and ask questions along the way — like a trainer in your pocket.</p></div>
+      <div class="step"><div class="step-num">04</div><div class="step-title">Evolve & Improve</div><p class="step-body">As you progress, SweatIQ continuously refines your program to keep results coming.</p></div>
     </div>
   </div>
 </div>
 
-<!-- TESTIMONIALS -->
-<section class="section" id="testimonials">
-  <div class="section-label">Real Results</div>
-  <h2 class="section-title">ATHLETES LOVE<br><span>SweatIQ</span></h2>
-  <div class="testimonials">
-    <div class="testi">
-      <div class="stars">★★★★★</div>
-      <p class="testi-text">Lost 18 pounds in 10 weeks following SweatIQ's plan. The meal plans alone are worth it — I never thought eating healthy could be this easy to follow.</p>
-      <div class="testi-author"><div class="testi-av">JM</div><div><div class="testi-name">Jamie M.</div><div class="testi-meta">Lost 18 lbs · 10 weeks</div></div></div>
-    </div>
-    <div class="testi">
-      <div class="stars">★★★★★</div>
-      <p class="testi-text">I've tried every fitness app. SweatIQ is different because it actually talks back. I asked about my shoulder pain mid-workout and it modified my entire program on the spot.</p>
-      <div class="testi-author"><div class="testi-av">RK</div><div><div class="testi-name">Ryan K.</div><div class="testi-meta">Powerlifter · 3 months</div></div></div>
-    </div>
-    <div class="testi">
-      <div class="stars">★★★★★</div>
-      <p class="testi-text">As a busy mom, I have 30 minutes max. SweatIQ builds me a new home workout every week that fits my schedule. I'm in the best shape of my life at 38.</p>
-      <div class="testi-author"><div class="testi-av">SC</div><div><div class="testi-name">Sarah C.</div><div class="testi-meta">Home athlete · 4 months</div></div></div>
-    </div>
+<section class="section" id="reviews">
+  <p class="sec-eyebrow">Real Results</p>
+  <h2 class="sec-heading">ATHLETES LOVE<br><b>SWEATIQ</b></h2>
+  <div class="testi-grid">
+    <div class="testi"><div class="stars">★★★★★</div><p class="testi-quote">Lost 18 pounds in 10 weeks following SweatIQ's plan. The personalized meal plans made eating healthy feel effortless for the first time.</p><div class="testi-person"><div class="testi-av">JM</div><div><div class="testi-name">Jamie M.</div><div class="testi-meta">Lost 18 lbs · 10 weeks</div></div></div></div>
+    <div class="testi"><div class="stars">★★★★★</div><p class="testi-quote">SweatIQ actually listens. I mentioned shoulder pain and it rebuilt my entire upper body program on the spot. No other app does that.</p><div class="testi-person"><div class="testi-av">RK</div><div><div class="testi-name">Ryan K.</div><div class="testi-meta">Powerlifter · 3 months</div></div></div></div>
+    <div class="testi"><div class="stars">★★★★★</div><p class="testi-quote">As a busy mom with only 30 minutes, SweatIQ adapts every week to my schedule. Best shape of my life at 38.</p><div class="testi-person"><div class="testi-av">SC</div><div><div class="testi-name">Sarah C.</div><div class="testi-meta">Home athlete · 4 months</div></div></div></div>
   </div>
 </section>
 
-<!-- CTA -->
-<section class="cta-section">
+<div class="cta-section">
   <div class="cta-inner">
-    <div class="section-label">Ready to Start?</div>
-    <h2 class="section-title">YOUR <span>BEST</span> BODY<br>STARTS NOW</h2>
-    <p class="section-sub" style="margin: 16px auto 36px; text-align:center;">No gym required. No contracts. Just results. Try SweatIQ free for 7 days.</p>
-    <a href="pricing.html" class="btn-primary" style="font-size:0.95rem; padding: 16px 36px;">View Plans & Pricing →</a>
+    <p class="sec-eyebrow">Ready to Start?</p>
+    <h2 class="sec-heading">YOUR <b>BEST</b> BODY<br>STARTS NOW</h2>
+    <p class="sec-body">No gym required. No contracts. No guesswork. Try SweatIQ free today.</p>
+    <a href="sweatiq-pricing.html" class="btn-lime" style="display:inline-block;width:auto;flex:none;">View Plans &amp; Pricing →</a>
   </div>
-</section>
+</div>
 
 <footer>
-  <div class="footer-logo">SweatIQ</div>
+  <div class="footer-logo">SWEATIQ</div>
   <div class="footer-links">
+    <a href="sweatiq-landing.html">Home</a>
+    <a href="sweatiq-chat.html">AI Coach</a>
+    <a href="sweatiq-pricing.html">Pricing</a>
     <a href="#">Privacy</a>
     <a href="#">Terms</a>
     <a href="#">Support</a>
-    <a href="pricing.html">Pricing</a>
   </div>
-  <div class="footer-copy">© 2025 SweatIQ AI · All rights reserved</div>
+  <p class="footer-copy">© 2025 SweatIQ AI · All rights reserved · Not a substitute for medical advice</p>
 </footer>
 
 </body>

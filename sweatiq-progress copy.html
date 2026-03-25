@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en" style="background:#0d0d0d;">
+<head>
+<meta charset="UTF-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SweatIQ">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="SweatIQ">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0d0d0d">
+<meta name="format-detection" content="telephone=no">
+<meta name="msapplication-tap-highlight" content="no">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-512.png">
+<link rel="apple-touch-startup-image" href="icon-512.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SweatIQ — My Progress</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@400;500;600&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; color-scheme: dark; }
+:root {
+  --bg:#0d0d0d; --surface:#161616; --card:#1e1e1e; --border:#2e2e2e;
+  --accent:#c8f135; --accent-dim:rgba(200,241,53,0.12); --accent-glow:rgba(200,241,53,0.2);
+  --text:#ffffff; --text2:#e0e0d8; --text3:#b0b0a8; --muted:#707068;
+}
+html { background: #0d0d0d !important; }
+body { background: #0d0d0d !important; color: #fff; font-family: 'Outfit', sans-serif; min-height: 100vh; -webkit-text-size-adjust: 100%; }
+
+/* TABS */
+.tabs { position: sticky; top: 0; z-index: 100; background: #0d0d0d !important; border-bottom: 1px solid var(--border); }
+.tabs-inner { display: grid; grid-template-columns: auto 1fr auto; align-items: center; padding: 0 24px; max-width: 1200px; margin: 0 auto; }
+.tabs-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.7rem; letter-spacing: 0.12em; color: var(--accent) !important; text-decoration: none; padding: 14px 0; display: block; }
+.tabs-nav { display: flex; justify-content: center; gap: 8px; }
+.tab { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 13px 20px; text-decoration: none; color: var(--text3) !important; font-size: 0.68rem; font-family: 'Space Mono', monospace; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.15s; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tab-icon { font-size: 1.1rem; }
+.tab.active { color: var(--accent) !important; border-bottom-color: var(--accent); }
+.tab:hover { color: var(--text) !important; }
+.tabs-cta { background: var(--accent); color: #0d0d0d !important; font-size: 0.68rem; font-weight: 700; padding: 9px 16px; border-radius: 8px; text-decoration: none; font-family: 'Space Mono', monospace; white-space: nowrap; }
+
+/* PAGE HEADER */
+.page-header { padding: 40px 24px 0; max-width: 1000px; margin: 0 auto; }
+.page-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2rem, 6vw, 3.2rem); letter-spacing: 0.06em; color: #fff !important; }
+.page-title b { color: var(--accent) !important; }
+.page-sub { font-size: 0.9rem; color: var(--text2) !important; margin-top: 6px; }
+
+/* SECTION TABS */
+.section-tabs { display: flex; gap: 4px; padding: 28px 24px 0; max-width: 1000px; margin: 0 auto; }
+.sec-tab { padding: 9px 20px; border-radius: 100px; font-size: 0.75rem; font-family: 'Space Mono', monospace; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; border: 1px solid var(--border); color: var(--text3) !important; background: none; transition: all 0.15s; }
+.sec-tab.active { background: var(--accent); color: #0d0d0d !important; border-color: var(--accent); font-weight: 700; }
+.sec-tab:hover:not(.active) { border-color: var(--text3); color: var(--text) !important; }
+
+/* CONTENT PANELS */
+.panels { padding: 24px; max-width: 1000px; margin: 0 auto; padding-bottom: 60px; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* SAVED ITEMS */
+.saved-filters { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+.filter-btn { padding: 6px 14px; border-radius: 100px; font-size: 0.7rem; font-family: 'Space Mono', monospace; cursor: pointer; border: 1px solid var(--border); color: var(--text3) !important; background: none; transition: all 0.15s; }
+.filter-btn.on { background: var(--accent-dim); border-color: var(--accent); color: var(--accent) !important; }
+.saved-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.saved-card { background: var(--card) !important; border: 1px solid var(--border); padding: 20px; position: relative; transition: border-color 0.2s; }
+.saved-card:hover { border-color: #444; }
+.saved-card-type { font-size: 0.58rem; font-family: 'Space Mono', monospace; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent) !important; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.saved-card-title { font-size: 0.95rem; font-weight: 600; color: #fff !important; margin-bottom: 8px; }
+.saved-card-body { font-size: 0.8rem; color: var(--text2) !important; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.saved-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; }
+.saved-card-date { font-size: 0.62rem; color: var(--text3) !important; font-family: 'Space Mono', monospace; }
+.saved-card-actions { display: flex; gap: 6px; }
+.card-action-btn { background: none; border: 1px solid var(--border); color: var(--text3) !important; font-size: 0.65rem; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-family: 'Space Mono', monospace; transition: all 0.15s; }
+.card-action-btn:hover { border-color: var(--text3); color: var(--text) !important; }
+.card-action-btn.delete:hover { border-color: #ff4444; color: #ff4444 !important; }
+.empty-state { text-align: center; padding: 60px 24px; color: var(--text3) !important; }
+.empty-icon { font-size: 3rem; margin-bottom: 16px; }
+.empty-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.06em; margin-bottom: 8px; color: var(--text2) !important; }
+.empty-body { font-size: 0.85rem; color: var(--text3) !important; margin-bottom: 24px; }
+.empty-cta { display: inline-block; background: var(--accent); color: #0d0d0d !important; padding: 10px 22px; border-radius: 8px; text-decoration: none; font-family: 'Space Mono', monospace; font-size: 0.75rem; font-weight: 700; }
+
+/* ADD NOTE FORM */
+.add-note-btn { display: flex; align-items: center; gap: 8px; background: var(--accent-dim); border: 1px dashed rgba(200,241,53,0.3); color: var(--accent) !important; padding: 14px 20px; border-radius: 2px; cursor: pointer; font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 500; margin-bottom: 20px; transition: all 0.15s; width: 100%; }
+.add-note-btn:hover { background: rgba(200,241,53,0.15); }
+.note-form { background: var(--card) !important; border: 1px solid var(--accent); padding: 20px; margin-bottom: 20px; display: none; }
+.note-form.show { display: block; }
+.note-input { width: 100%; background: #111 !important; border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-family: 'Outfit', sans-serif; font-size: 0.88rem; color: #fff !important; outline: none; margin-bottom: 10px; }
+.note-input:focus { border-color: var(--accent); }
+.note-input::placeholder { color: #555 !important; }
+.note-textarea { width: 100%; background: #111 !important; border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-family: 'Outfit', sans-serif; font-size: 0.88rem; color: #fff !important; outline: none; resize: vertical; min-height: 80px; margin-bottom: 10px; }
+.note-textarea::placeholder { color: #555 !important; }
+.note-textarea:focus { border-color: var(--accent); }
+.note-type-select { width: 100%; background: #111 !important; border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-family: 'Outfit', sans-serif; font-size: 0.88rem; color: #fff !important; outline: none; margin-bottom: 10px; }
+.form-btns { display: flex; gap: 8px; }
+.btn-save-note { background: var(--accent); color: #0d0d0d !important; border: none; border-radius: 8px; padding: 10px 20px; font-family: 'Space Mono', monospace; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+.btn-cancel-note { background: none; border: 1px solid var(--border); color: var(--text3) !important; border-radius: 8px; padding: 10px 20px; font-family: 'Space Mono', monospace; font-size: 0.75rem; cursor: pointer; }
+
+/* PROGRESS SECTION */
+.progress-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+.measure-card { background: var(--card) !important; border: 1px solid var(--border); padding: 24px; }
+.measure-card h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.06em; color: #fff !important; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.measure-inputs { display: flex; flex-direction: column; gap: 10px; }
+.measure-row { display: flex; align-items: center; gap: 10px; }
+.measure-label { font-size: 0.75rem; color: var(--text3) !important; font-family: 'Space Mono', monospace; width: 100px; flex-shrink: 0; }
+.measure-input { flex: 1; background: #111 !important; border: 1px solid var(--border); border-radius: 7px; padding: 8px 12px; font-family: 'Outfit', sans-serif; font-size: 0.88rem; color: #fff !important; outline: none; }
+.measure-input:focus { border-color: var(--accent); }
+.measure-unit { font-size: 0.72rem; color: var(--text3) !important; font-family: 'Space Mono', monospace; width: 30px; }
+.save-measurements-btn { width: 100%; background: var(--accent); color: #0d0d0d !important; border: none; border-radius: 8px; padding: 12px; font-family: 'Space Mono', monospace; font-size: 0.78rem; font-weight: 700; cursor: pointer; margin-top: 14px; transition: all 0.15s; }
+.save-measurements-btn:hover { background: #d6ff3d; }
+
+/* PHOTO SECTION */
+.photo-section { background: var(--card) !important; border: 1px solid var(--border); padding: 24px; margin-bottom: 20px; }
+.photo-section h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.06em; color: #fff !important; margin-bottom: 6px; }
+.photo-section p { font-size: 0.82rem; color: var(--text2) !important; margin-bottom: 18px; }
+.photo-upload-area { border: 2px dashed var(--border); border-radius: 8px; padding: 32px; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; }
+.photo-upload-area:hover { border-color: var(--accent); background: var(--accent-dim); }
+.photo-upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.upload-icon { font-size: 2rem; margin-bottom: 8px; }
+.upload-text { font-size: 0.82rem; color: var(--text2) !important; }
+.upload-hint { font-size: 0.68rem; color: var(--text3) !important; margin-top: 4px; font-family: 'Space Mono', monospace; }
+.photo-date-label { font-size: 0.72rem; color: var(--text3) !important; font-family: 'Space Mono', monospace; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; margin-top: 14px; display: block; }
+.photo-date-input { background: #111 !important; border: 1px solid var(--border); border-radius: 7px; padding: 8px 12px; font-family: 'Outfit', sans-serif; font-size: 0.88rem; color: #fff !important; outline: none; }
+.photo-date-input:focus { border-color: var(--accent); }
+.save-photo-btn { background: var(--accent); color: #0d0d0d !important; border: none; border-radius: 8px; padding: 11px 24px; font-family: 'Space Mono', monospace; font-size: 0.75rem; font-weight: 700; cursor: pointer; margin-top: 14px; transition: all 0.15s; display: block; }
+.save-photo-btn:hover { background: #d6ff3d; }
+
+/* PHOTO GALLERY */
+.photo-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-top: 20px; }
+.photo-item { position: relative; aspect-ratio: 3/4; overflow: hidden; background: var(--surface) !important; border: 1px solid var(--border); }
+.photo-item img { width: 100%; height: 100%; object-fit: cover; }
+.photo-item-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.85)); padding: 10px 8px 8px; }
+.photo-item-date { font-size: 0.6rem; color: #fff !important; font-family: 'Space Mono', monospace; }
+.photo-delete { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.7); border: none; color: #fff !important; font-size: 0.75rem; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+/* MEASUREMENTS HISTORY */
+.measure-history { margin-top: 20px; }
+.measure-history h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.06em; color: #fff !important; margin-bottom: 12px; }
+.measure-log { display: flex; flex-direction: column; gap: 8px; }
+.measure-entry { background: var(--card) !important; border: 1px solid var(--border); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; }
+.measure-entry-date { font-size: 0.68rem; color: var(--text3) !important; font-family: 'Space Mono', monospace; }
+.measure-entry-stats { display: flex; gap: 16px; flex-wrap: wrap; }
+.measure-stat { text-align: center; }
+.measure-stat-val { font-size: 0.9rem; font-weight: 600; color: var(--accent) !important; }
+.measure-stat-label { font-size: 0.55rem; color: var(--text3) !important; font-family: 'Space Mono', monospace; text-transform: uppercase; }
+.measure-delete { background: none; border: none; color: var(--text3) !important; cursor: pointer; font-size: 0.8rem; padding: 2px 6px; }
+.measure-delete:hover { color: #ff4444 !important; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--accent); color: #0d0d0d !important; padding: 10px 20px; border-radius: 100px; font-family: 'Space Mono', monospace; font-size: 0.75rem; font-weight: 700; transition: transform 0.3s ease; z-index: 999; white-space: nowrap; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--border); padding: 24px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; background: #0d0d0d !important; }
+.footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: var(--accent) !important; letter-spacing: 0.12em; }
+.footer-links { display: flex; gap: 16px; flex-wrap: wrap; }
+.footer-links a { font-size: 0.72rem; color: var(--text3) !important; text-decoration: none; }
+.footer-links a:hover { color: #fff !important; }
+.footer-copy { font-size: 0.62rem; color: var(--muted) !important; font-family: 'Space Mono', monospace; width: 100%; }
+
+@media (max-width: 768px) {
+  .tabs-inner { padding: 0 12px; }
+  .tabs-logo { font-size: 1.2rem; }
+  .tab { padding: 11px 10px; font-size: 0.55rem; }
+  .tab-icon { font-size: 0.9rem; }
+  .tabs-cta { display: none; }
+  .progress-grid { grid-template-columns: 1fr; }
+  .panels { padding: 16px; }
+  .page-header { padding: 28px 16px 0; }
+  .section-tabs { padding: 20px 16px 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="tabs">
+  <div class="tabs-inner">
+    <a href="sweatiq-landing.html" class="tabs-logo">SWEATIQ</a>
+    <nav class="tabs-nav">
+      <a href="sweatiq-landing.html" class="tab"><span class="tab-icon">🏠</span>Home</a>
+      <a href="sweatiq-chat.html" class="tab"><span class="tab-icon">💬</span>Coach</a>
+      <a href="sweatiq-progress.html" class="tab active"><span class="tab-icon">📊</span>Progress</a>
+      <a href="sweatiq-pricing.html" class="tab"><span class="tab-icon">⚡</span>Plans</a>
+    </nav>
+    <a href="sweatiq-chat.html" class="tabs-cta">ASK COACH →</a>
+  </div>
+</div>
+
+<div class="page-header">
+  <h1 class="page-title">MY <b>PROGRESS</b></h1>
+  <p class="page-sub">Track your journey — saved plans, measurements, and progress photos all in one place.</p>
+</div>
+
+<!-- PRO GATE OVERLAY -->
+<div id="proGate" style="display:none;position:fixed;inset:0;background:rgba(13,13,13,0.97);z-index:200;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;">
+  <div style="font-size:3rem;margin-bottom:20px;">🔒</div>
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:0.06em;color:#fff;margin-bottom:12px;">PRO <span style="color:#c8f135;">MEMBERS ONLY</span></div>
+  <p style="font-size:0.95rem;color:#d0d0c8;max-width:360px;line-height:1.7;margin-bottom:28px;">Progress tracking, saved workouts, meal plans, measurements, and progress photos are exclusive to SweatIQ Pro members.</p>
+  <a href="sweatiq-pricing.html" style="background:#c8f135;color:#0d0d0d;font-family:'Space Mono',monospace;font-size:0.85rem;font-weight:700;padding:14px 32px;border-radius:10px;text-decoration:none;display:inline-block;margin-bottom:14px;">Upgrade to Pro →</a>
+  <br>
+  <a href="sweatiq-chat.html" style="font-size:0.78rem;color:#b0b0a8;font-family:'Space Mono',monospace;">← Back to Coach</a>
+</div>
+
+<div id="mainContent">
+<div class="section-tabs">
+  <button class="sec-tab active" onclick="switchPanel('saved')">💾 Saved</button>
+  <button class="sec-tab" onclick="switchPanel('measurements')">📏 Measurements</button>
+  <button class="sec-tab" onclick="switchPanel('photos')">📸 Photos</button>
+</div>
+
+<div class="panels">
+
+  <!-- SAVED PANEL -->
+  <div class="panel active" id="panel-saved">
+    <div class="saved-filters">
+      <button class="filter-btn on" onclick="filterSaved('all', this)">All</button>
+      <button class="filter-btn" onclick="filterSaved('workout', this)">🏋️ Workouts</button>
+      <button class="filter-btn" onclick="filterSaved('meal', this)">🥗 Meal Plans</button>
+      <button class="filter-btn" onclick="filterSaved('note', this)">📝 Notes</button>
+    </div>
+
+    <button class="add-note-btn" onclick="toggleNoteForm()">
+      <span>＋</span> Add a note or save something manually
+    </button>
+
+    <div class="note-form" id="noteForm">
+      <select class="note-type-select" id="noteType">
+        <option value="workout">🏋️ Workout</option>
+        <option value="meal">🥗 Meal Plan</option>
+        <option value="note">📝 Note</option>
+      </select>
+      <input type="text" class="note-input" id="noteTitle" placeholder="Title (e.g. Push Day A, High Protein Week)">
+      <textarea class="note-textarea" id="noteBody" placeholder="Paste your workout, meal plan, or note here…"></textarea>
+      <div class="form-btns">
+        <button class="btn-save-note" onclick="saveNote()">Save</button>
+        <button class="btn-cancel-note" onclick="toggleNoteForm()">Cancel</button>
+      </div>
+    </div>
+
+    <div class="saved-grid" id="savedGrid"></div>
+    <div class="empty-state" id="savedEmpty" style="display:none;">
+      <div class="empty-icon">💾</div>
+      <div class="empty-title">Nothing Saved Yet</div>
+      <p class="empty-body">Ask the AI coach for a workout or meal plan, then tap the save button to store it here.</p>
+      <a href="sweatiq-chat.html" class="empty-cta">Ask Your Coach →</a>
+    </div>
+  </div>
+
+  <!-- MEASUREMENTS PANEL -->
+  <div class="panel" id="panel-measurements">
+    <div class="progress-grid">
+      <div class="measure-card">
+        <h3>📏 Log Measurements</h3>
+        <div class="measure-inputs">
+          <div class="measure-row"><span class="measure-label">Weight</span><input type="number" class="measure-input" id="m-weight" placeholder="0.0" step="0.1"><span class="measure-unit">lbs</span></div>
+          <div class="measure-row"><span class="measure-label">Waist</span><input type="number" class="measure-input" id="m-waist" placeholder="0.0" step="0.1"><span class="measure-unit">in</span></div>
+          <div class="measure-row"><span class="measure-label">Chest</span><input type="number" class="measure-input" id="m-chest" placeholder="0.0" step="0.1"><span class="measure-unit">in</span></div>
+          <div class="measure-row"><span class="measure-label">Hips</span><input type="number" class="measure-input" id="m-hips" placeholder="0.0" step="0.1"><span class="measure-unit">in</span></div>
+          <div class="measure-row"><span class="measure-label">Arms</span><input type="number" class="measure-input" id="m-arms" placeholder="0.0" step="0.1"><span class="measure-unit">in</span></div>
+          <div class="measure-row"><span class="measure-label">Thighs</span><input type="number" class="measure-input" id="m-thighs" placeholder="0.0" step="0.1"><span class="measure-unit">in</span></div>
+        </div>
+        <button class="save-measurements-btn" onclick="saveMeasurements()">Save Measurements</button>
+      </div>
+
+      <div class="measure-card" id="statsCard">
+        <h3>📈 Your Stats</h3>
+        <div id="statsContent" style="color:var(--text3);font-size:0.85rem;">Log your first measurements to see your stats here.</div>
+      </div>
+    </div>
+
+    <div class="measure-history">
+      <h3>HISTORY</h3>
+      <div class="measure-log" id="measureLog"></div>
+    </div>
+  </div>
+
+  <!-- PHOTOS PANEL -->
+  <div class="panel" id="panel-photos">
+    <div class="photo-section">
+      <h3>📸 Add Progress Photo</h3>
+      <p>Track your visual transformation over time. Photos are stored locally on your device.</p>
+      <div class="photo-upload-area" id="uploadArea">
+        <input type="file" accept="image/*" id="photoInput" onchange="previewPhoto(this)">
+        <div class="upload-icon">📷</div>
+        <div class="upload-text" id="uploadText">Tap to select a photo</div>
+        <div class="upload-hint">JPG, PNG supported</div>
+      </div>
+      <label class="photo-date-label">Date taken</label>
+      <input type="date" class="photo-date-input" id="photoDate">
+      <button class="save-photo-btn" onclick="savePhoto()">Save Photo</button>
+    </div>
+
+    <div class="photo-gallery" id="photoGallery"></div>
+    <div class="empty-state" id="photoEmpty" style="display:none;">
+      <div class="empty-icon">📸</div>
+      <div class="empty-title">No Photos Yet</div>
+      <p class="empty-body">Add your first progress photo to start tracking your visual transformation.</p>
+    </div>
+  </div>
+
+</div>
+
+</div><!-- /mainContent -->
+<div class="toast" id="toast">Saved!</div>
+
+<footer>
+  <div class="footer-logo">SWEATIQ</div>
+  <div class="footer-links">
+    <a href="sweatiq-landing.html">Home</a>
+    <a href="sweatiq-chat.html">AI Coach</a>
+    <a href="sweatiq-pricing.html">Pricing</a>
+  </div>
+  <p class="footer-copy">© 2025 SweatIQ AI · All rights reserved</p>
+</footer>
+
+<script>
+// ── PANEL SWITCHING ──────────────────────────────────────────
+function switchPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sec-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────
+function showToast(msg = 'Saved!') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── SAVED ITEMS ───────────────────────────────────────────────
+function getSaved() {
+  try { return JSON.parse(localStorage.getItem('sweatiq_saved') || '[]'); } catch { return []; }
+}
+function setSaved(items) {
+  localStorage.setItem('sweatiq_saved', JSON.stringify(items));
+}
+
+let currentFilter = 'all';
+
+function filterSaved(type, btn) {
+  currentFilter = type;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderSaved();
+}
+
+function renderSaved() {
+  const items = getSaved();
+  const grid = document.getElementById('savedGrid');
+  const empty = document.getElementById('savedEmpty');
+  const filtered = currentFilter === 'all' ? items : items.filter(i => i.type === currentFilter);
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  const typeLabels = { workout: '🏋️ Workout', meal: '🥗 Meal Plan', note: '📝 Note' };
+  grid.innerHTML = filtered.map((item, i) => {
+    const realIndex = items.indexOf(item);
+    return `
+    <div class="saved-card">
+      <div class="saved-card-type">${typeLabels[item.type] || '📝 Note'}</div>
+      <div class="saved-card-title">${escHtml(item.title)}</div>
+      <div class="saved-card-body">${escHtml(item.body)}</div>
+      <div class="saved-card-footer">
+        <span class="saved-card-date">${item.date}</span>
+        <div class="saved-card-actions">
+          <button class="card-action-btn" onclick="copyItem(${realIndex})">Copy</button>
+          <button class="card-action-btn delete" onclick="deleteItem(${realIndex})">Delete</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function escHtml(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function copyItem(i) {
+  const items = getSaved();
+  navigator.clipboard.writeText(items[i].title + '\n\n' + items[i].body).then(() => showToast('Copied!'));
+}
+
+function deleteItem(i) {
+  const items = getSaved();
+  items.splice(i, 1);
+  setSaved(items);
+  renderSaved();
+  showToast('Deleted');
+}
+
+function toggleNoteForm() {
+  document.getElementById('noteForm').classList.toggle('show');
+}
+
+function saveNote() {
+  const title = document.getElementById('noteTitle').value.trim();
+  const body = document.getElementById('noteBody').value.trim();
+  const type = document.getElementById('noteType').value;
+  if (!title || !body) { alert('Please add a title and content.'); return; }
+
+  const items = getSaved();
+  items.unshift({ type, title, body, date: new Date().toLocaleDateString() });
+  setSaved(items);
+  document.getElementById('noteTitle').value = '';
+  document.getElementById('noteBody').value = '';
+  document.getElementById('noteForm').classList.remove('show');
+  renderSaved();
+  showToast('Saved!');
+}
+
+// ── MEASUREMENTS ──────────────────────────────────────────────
+function getMeasurements() {
+  try { return JSON.parse(localStorage.getItem('sweatiq_measurements') || '[]'); } catch { return []; }
+}
+
+function saveMeasurements() {
+  const fields = ['weight', 'waist', 'chest', 'hips', 'arms', 'thighs'];
+  const entry = { date: new Date().toLocaleDateString(), ts: Date.now() };
+  let hasData = false;
+  fields.forEach(f => {
+    const val = document.getElementById('m-' + f).value;
+    if (val) { entry[f] = parseFloat(val); hasData = true; }
+  });
+  if (!hasData) { alert('Please enter at least one measurement.'); return; }
+
+  const measurements = getMeasurements();
+  measurements.unshift(entry);
+  localStorage.setItem('sweatiq_measurements', JSON.stringify(measurements));
+  fields.forEach(f => document.getElementById('m-' + f).value = '');
+  renderMeasurements();
+  showToast('Measurements saved!');
+}
+
+function renderMeasurements() {
+  const measurements = getMeasurements();
+  const log = document.getElementById('measureLog');
+  const statsCard = document.getElementById('statsContent');
+
+  if (measurements.length === 0) {
+    log.innerHTML = '<p style="color:var(--text3);font-size:0.85rem;">No measurements logged yet.</p>';
+    statsCard.innerHTML = 'Log your first measurements to see your stats here.';
+    return;
+  }
+
+  // Stats card — show latest
+  const latest = measurements[0];
+  const fields = ['weight', 'waist', 'chest', 'hips', 'arms', 'thighs'];
+  const units = { weight: 'lbs', waist: 'in', chest: 'in', hips: 'in', arms: 'in', thighs: 'in' };
+  statsCard.innerHTML = fields.filter(f => latest[f]).map(f => `
+    <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:0.8rem;color:var(--text3);font-family:'Space Mono',monospace;text-transform:uppercase;">${f}</span>
+      <span style="font-size:0.88rem;color:var(--accent);font-weight:600;">${latest[f]} ${units[f]}</span>
+    </div>`).join('');
+
+  // Log
+  log.innerHTML = measurements.map((entry, i) => {
+    const stats = fields.filter(f => entry[f]).map(f => `
+      <div class="measure-stat">
+        <div class="measure-stat-val">${entry[f]}</div>
+        <div class="measure-stat-label">${f}</div>
+      </div>`).join('');
+    return `
+    <div class="measure-entry">
+      <span class="measure-entry-date">${entry.date}</span>
+      <div class="measure-entry-stats">${stats}</div>
+      <button class="measure-delete" onclick="deleteMeasurement(${i})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function deleteMeasurement(i) {
+  const m = getMeasurements();
+  m.splice(i, 1);
+  localStorage.setItem('sweatiq_measurements', JSON.stringify(m));
+  renderMeasurements();
+  showToast('Deleted');
+}
+
+// ── PHOTOS ────────────────────────────────────────────────────
+let pendingPhotoData = null;
+
+function previewPhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    pendingPhotoData = e.target.result;
+    document.getElementById('uploadText').textContent = '✅ ' + file.name;
+  };
+  reader.readAsDataURL(file);
+}
+
+function getPhotos() {
+  try { return JSON.parse(localStorage.getItem('sweatiq_photos') || '[]'); } catch { return []; }
+}
+
+function savePhoto() {
+  if (!pendingPhotoData) { alert('Please select a photo first.'); return; }
+  const date = document.getElementById('photoDate').value || new Date().toLocaleDateString();
+  const photos = getPhotos();
+  photos.unshift({ data: pendingPhotoData, date, ts: Date.now() });
+
+  // Keep max 20 photos to avoid localStorage limits
+  if (photos.length > 20) photos.pop();
+  localStorage.setItem('sweatiq_photos', JSON.stringify(photos));
+
+  pendingPhotoData = null;
+  document.getElementById('photoInput').value = '';
+  document.getElementById('uploadText').textContent = 'Tap to select a photo';
+  document.getElementById('photoDate').value = '';
+  renderPhotos();
+  showToast('Photo saved!');
+}
+
+function renderPhotos() {
+  const photos = getPhotos();
+  const gallery = document.getElementById('photoGallery');
+  const empty = document.getElementById('photoEmpty');
+
+  if (photos.length === 0) {
+    gallery.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  gallery.innerHTML = photos.map((p, i) => `
+    <div class="photo-item">
+      <img src="${p.data}" alt="Progress photo">
+      <div class="photo-item-overlay"><div class="photo-item-date">${p.date}</div></div>
+      <button class="photo-delete" onclick="deletePhoto(${i})">✕</button>
+    </div>`).join('');
+}
+
+function deletePhoto(i) {
+  const photos = getPhotos();
+  photos.splice(i, 1);
+  localStorage.setItem('sweatiq_photos', JSON.stringify(photos));
+  renderPhotos();
+  showToast('Deleted');
+}
+
+// ── PRO GATE ─────────────────────────────────────────────────
+function checkProAccess() {
+  const plan = localStorage.getItem('sweatiq_plan');
+  if (plan !== 'pro' && plan !== 'elite') {
+    document.getElementById('proGate').style.display = 'flex';
+    document.getElementById('mainContent').style.display = 'none';
+  }
+}
+
+// ── INIT ─────────────────────────────────────────────────────
+checkProAccess();
+document.getElementById('photoDate').value = new Date().toISOString().split('T')[0];
+renderSaved();
+renderMeasurements();
+renderPhotos();
+
+// Check if arriving from chat with a saved item
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('saved') === 'true') {
+  showToast('Item saved to your progress!');
+  window.history.replaceState({}, '', window.location.pathname);
+}
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>

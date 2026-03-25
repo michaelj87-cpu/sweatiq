@@ -1,381 +1,303 @@
 <!DOCTYPE html>
-<html lang="en" style="background:#0d0d0d;">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="SweatIQ">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="application-name" content="SweatIQ">
-<meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#0d0d0d">
-<meta name="format-detection" content="telephone=no">
-<meta name="msapplication-tap-highlight" content="no">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-512.png">
-<link rel="apple-touch-startup-image" href="icon-512.png">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>SweatIQ — AI Coach</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@400;500;600&family=Space+Mono&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SweatIQ — AI Fitness Coach</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=Space+Mono&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; color-scheme: dark; }
-:root { --bg:#0d0d0d;--surface:#161616;--card:#1e1e1e;--border:#2e2e2e;--accent:#c8f135;--accent-dim:rgba(200,241,53,0.12);--accent-glow:rgba(200,241,53,0.18);--text:#ffffff;--text2:#e0e0d8;--text3:#b0b0a8;--muted:#707068;--ai-bg:#0f1a00;--ai-border:rgba(200,241,53,0.18); }
-html { height: 100%; background: #0d0d0d !important; color-scheme: dark; }
-body { padding-bottom: env(safe-area-inset-bottom); height: 100%; background: #0d0d0d !important; color: #ffffff; font-family: 'Outfit', sans-serif; display: flex; flex-direction: column; -webkit-text-size-adjust: 100%; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0a0a; --surface: #111; --card: #161616; --border: #222;
+    --accent: #c8f135; --accent-dim: rgba(200,241,53,0.1); --accent-glow: rgba(200,241,53,0.2);
+    --text: #f0f0f0; --muted: #555; --ai-bubble: #0c1500; --user-bubble: #181818;
+  }
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overflow: hidden; }
+  .app { display: grid; grid-template-columns: 255px 1fr; height: 100vh; }
 
-/* TABS */
-.tabs { flex-shrink: 0; background: #0d0d0d !important; border-bottom: 1px solid var(--border); padding-top: env(safe-area-inset-top); }
-.tabs-inner { display: grid; grid-template-columns: auto 1fr auto; align-items: center; padding: 0 24px; }
-.tabs-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.7rem; letter-spacing: 0.12em; color: var(--accent) !important; text-decoration: none; padding: 14px 0; display: block; }
-.tabs-nav { display: flex; justify-content: center; gap: 8px; }
-.tab { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 13px 24px; text-decoration: none; color: var(--text3) !important; font-size: 0.72rem; font-family: 'Space Mono', monospace; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.15s; border-bottom: 2px solid transparent; margin-bottom: -1px; }
-.tab-icon { font-size: 1.2rem; }
-.tab.active { color: var(--accent) !important; border-bottom-color: var(--accent); }
-.tabs-right { display: flex; align-items: center; gap: 8px; }
-.upgrade-link { background: var(--accent); color: #0d0d0d !important; font-size: 0.63rem; font-weight: 700; padding: 7px 13px; border-radius: 7px; text-decoration: none; font-family: 'Space Mono', monospace; white-space: nowrap; }
-.clear-btn { background: rgba(255,255,255,0.06); border: 1px solid #3a3a3a; color: #e0e0d8 !important; font-size: 0.63rem; padding: 7px 11px; border-radius: 7px; cursor: pointer; font-family: 'Space Mono', monospace; transition: all 0.15s; }
-.clear-btn:hover { border-color: #888; color: #fff !important; }
+  /* SIDEBAR */
+  .sidebar { background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+  .logo-area { padding: 26px 22px 18px; border-bottom: 1px solid var(--border); }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.1rem; letter-spacing: 0.08em; color: var(--accent); line-height: 1; }
+  .logo-sub { font-size: 0.6rem; color: var(--muted); letter-spacing: 0.22em; text-transform: uppercase; margin-top: 2px; font-family: 'Space Mono', monospace; }
+  .sidebar-section { padding: 18px 14px 8px; }
+  .sidebar-label { font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); font-family: 'Space Mono', monospace; margin-bottom: 8px; padding: 0 8px; }
+  .quick-btn { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; color: #888; transition: all 0.15s; border: none; background: none; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif; }
+  .quick-btn:hover { background: var(--accent-dim); color: var(--accent); }
+  .quick-btn .icon { width: 18px; text-align: center; font-size: 0.95rem; }
+  .sidebar-divider { height: 1px; background: var(--border); margin: 6px 14px; }
+  .sidebar-bottom { margin-top: auto; padding: 14px; border-top: 1px solid var(--border); }
+  .user-pill { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #7aaa00); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: #0a0a0a; flex-shrink: 0; }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 0.78rem; font-weight: 500; }
+  .user-plan { font-size: 0.6rem; color: var(--accent); font-family: 'Space Mono', monospace; text-transform: uppercase; }
 
-/* LAYOUT */
-.layout { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+  /* MAIN */
+  .main { display: flex; flex-direction: column; height: 100vh; }
+  .topbar { padding: 15px 26px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .chat-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 0.08em; }
+  .status-pill { display: flex; align-items: center; gap: 6px; font-size: 0.65rem; color: var(--muted); font-family: 'Space Mono', monospace; background: var(--card); border: 1px solid var(--border); padding: 5px 10px; border-radius: 100px; }
+  .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); animation: blink 2s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
 
-/* SIDEBAR */
-.sidebar { width: 220px; background: #161616 !important; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0; }
-.sb-sec { padding: 16px 12px 8px; }
-.sb-label { font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: #b0b0a8 !important; font-family: 'Space Mono', monospace; margin-bottom: 7px; padding: 0 6px; }
-.sb-btn { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; color: #e0e0d8 !important; transition: all 0.15s; border: none; background: none; width: 100%; text-align: left; font-family: 'Outfit', sans-serif; }
-.sb-btn:hover { background: rgba(200,241,53,0.1); color: var(--accent) !important; }
-.sb-icon { width: 16px; text-align: center; font-size: 0.9rem; }
-.sb-div { height: 1px; background: #2e2e2e; margin: 6px 12px; }
-.sb-bottom { margin-top: auto; padding: 12px; }
-.user-card { display: flex; align-items: center; gap: 9px; padding: 10px 12px; border-radius: 9px; background: #1e1e1e !important; border: 1px solid #2e2e2e; }
-.user-av { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #8ab800); display: flex; align-items: center; justify-content: center; font-size: 0.62rem; font-weight: 700; color: #0d0d0d !important; flex-shrink: 0; font-family: 'Space Mono', monospace; }
-.user-nm { font-size: 0.78rem; font-weight: 600; color: #ffffff !important; }
-.user-plan { font-size: 0.58rem; color: var(--accent) !important; font-family: 'Space Mono', monospace; text-transform: uppercase; }
+  /* MESSAGES */
+  .messages { flex: 1; overflow-y: auto; padding: 28px; display: flex; flex-direction: column; gap: 18px; scroll-behavior: smooth; }
+  .messages::-webkit-scrollbar { width: 3px; }
+  .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-/* MAIN */
-.main { display: flex; flex-direction: column; flex: 1; overflow: hidden; min-height: 0; background: #0d0d0d !important; }
-.msgs { flex: 1; overflow-y: auto; padding: 18px 18px 12px; display: flex; flex-direction: column; gap: 16px; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; min-height: 0; }
-.msgs::-webkit-scrollbar { width: 3px; }
-.msgs::-webkit-scrollbar-thumb { background: #2e2e2e; border-radius: 2px; }
+  .welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; text-align: center; gap: 14px; padding: 40px; animation: fadeUp 0.5s ease; }
+  .welcome-emoji { font-size: 3rem; margin-bottom: 4px; }
+  .welcome h1 { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; letter-spacing: 0.05em; line-height: 1; }
+  .welcome h1 span { color: var(--accent); }
+  .welcome p { font-size: 0.88rem; color: var(--muted); max-width: 360px; line-height: 1.65; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 10px; }
+  .chip { padding: 8px 16px; border-radius: 100px; border: 1px solid var(--border); font-size: 0.76rem; color: #888; cursor: pointer; transition: all 0.15s; background: var(--card); font-family: 'DM Sans', sans-serif; }
+  .chip:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
 
-/* WELCOME */
-.welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; text-align: center; gap: 14px; padding: 24px 16px; }
-.welcome-trophy { font-size: 2.8rem; }
-.welcome h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(1.8rem, 8vw, 2.8rem); letter-spacing: 0.05em; line-height: 1; color: #ffffff !important; }
-.welcome h1 b { color: var(--accent) !important; }
-.welcome p { font-size: 0.9rem; color: #d0d0c8 !important; max-width: 320px; line-height: 1.7; }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 6px; }
-.chip { padding: 9px 16px; border-radius: 100px; border: 1px solid #3a3a3a; font-size: 0.78rem; color: #e0e0d8 !important; cursor: pointer; transition: all 0.15s; background: #1a1a1a !important; font-family: 'Outfit', sans-serif; }
-.chip:hover { border-color: var(--accent); color: var(--accent) !important; background: rgba(200,241,53,0.1) !important; }
-.chip:active { transform: scale(0.97); }
+  .msg-row { display: flex; gap: 10px; align-items: flex-start; animation: fadeUp 0.3s ease; }
+  .msg-row.user { flex-direction: row-reverse; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
 
-/* MESSAGES */
-.msg-row { display: flex; gap: 9px; align-items: flex-start; animation: rise 0.3s ease; }
-.msg-row.user { flex-direction: row-reverse; }
-@keyframes rise { from{opacity:0;transform:translateY(7px)} to{opacity:1;transform:translateY(0)} }
-.msg-av { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.62rem; font-weight: 700; margin-top: 2px; }
-.msg-av.ai { background: linear-gradient(135deg, var(--accent), #8ab800); color: #0d0d0d !important; font-family: 'Bebas Neue', sans-serif; font-size: 0.82rem; }
-.msg-av.me { background: #1e1e1e; border: 1px solid #3a3a3a; color: #e0e0d8 !important; font-family: 'Space Mono', monospace; font-size: 0.55rem; }
-.bubble { max-width: 78%; padding: 12px 16px; font-size: 0.88rem; line-height: 1.7; word-break: break-word; }
-.bubble.ai { background: #0f1a00 !important; border: 1px solid rgba(200,241,53,0.2); color: #f0f0e8 !important; border-radius: 3px 13px 13px 13px; }
-.bubble.user { background: #1c1c1c !important; border: 1px solid #3a3a3a; color: #f0f0e8 !important; border-radius: 13px 3px 13px 13px; }
-.bubble strong { color: var(--accent) !important; font-weight: 600; }
-.bubble em { color: #d0d0c8 !important; font-style: italic; }
-.bubble ul, .bubble ol { padding-left: 18px; margin-top: 6px; }
-.bubble li { margin-bottom: 4px; color: #e0e0d8 !important; }
-.bubble h3 { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.05em; color: var(--accent) !important; font-size: 1rem; margin: 10px 0 4px; }
-.bubble p { color: #f0f0e8 !important; }
-.bubble p + p { margin-top: 6px; }
+  .msg-av { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; margin-top: 2px; }
+  .msg-av.ai { background: linear-gradient(135deg, var(--accent), #7aaa00); color: #0a0a0a; font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; }
+  .msg-av.usr { background: #222; color: var(--text); }
 
-.typing-row { display: flex; gap: 9px; align-items: center; }
-.typing-dots { display: flex; gap: 4px; padding: 13px 16px; background: #0f1a00 !important; border: 1px solid rgba(200,241,53,0.2); border-radius: 3px 13px 13px 13px; }
-.typing-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: dot 1.2s infinite; }
-.typing-dots span:nth-child(2) { animation-delay: 0.18s; }
-.typing-dots span:nth-child(3) { animation-delay: 0.36s; }
-@keyframes dot { 0%,60%,100%{transform:translateY(0);opacity:0.3} 30%{transform:translateY(-5px);opacity:1} }
+  .bubble { max-width: 66%; padding: 12px 16px; font-size: 0.86rem; line-height: 1.68; }
+  .bubble.ai { background: var(--ai-bubble); border: 1px solid rgba(200,241,53,0.14); color: var(--text); border-radius: 3px 13px 13px 13px; }
+  .bubble.user { background: var(--user-bubble); border: 1px solid var(--border); color: var(--text); border-radius: 13px 3px 13px 13px; }
+  .bubble strong { color: var(--accent); font-weight: 600; }
+  .bubble em { font-style: italic; color: #aaa; }
+  .bubble ul, .bubble ol { padding-left: 18px; margin-top: 6px; }
+  .bubble li { margin-bottom: 4px; }
+  .bubble h3 { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.05em; color: var(--accent); font-size: 1rem; margin: 10px 0 4px; }
 
-/* INPUT */
-.input-zone { padding: 10px 14px calc(14px + env(safe-area-inset-bottom)); flex-shrink: 0; background: #0d0d0d !important; border-top: 1px solid #2e2e2e; }
-.input-box { display: flex; gap: 9px; align-items: flex-end; background: #1a1a1a !important; border: 1px solid #3a3a3a; border-radius: 14px; padding: 9px 9px 9px 15px; transition: border-color 0.2s, box-shadow 0.2s; }
-.input-box:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(200,241,53,0.1); }
-#inp { flex: 1; background: none !important; border: none; outline: none; font-family: 'Outfit', sans-serif; font-size: 16px; color: #ffffff !important; resize: none; line-height: 1.5; max-height: 100px; min-height: 22px; }
-#inp::placeholder { color: #666 !important; }
-.send-btn { width: 36px; height: 36px; border-radius: 10px; background: var(--accent); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
-.send-btn:hover { background: #d6ff3d; transform: scale(1.06); }
-.send-btn:active { transform: scale(0.95); }
-.send-btn svg { width: 15px; height: 15px; fill: #0d0d0d; }
-.send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-.input-hint { font-size: 0.58rem; color: #707068 !important; text-align: center; margin-top: 6px; font-family: 'Space Mono', monospace; }
-.msg-save-btn { background: none; border: 1px solid var(--border); color: var(--text3) !important; font-size: 0.75rem; padding: 4px 8px; border-radius: 6px; cursor: pointer; transition: all 0.15s; align-self: flex-start; margin-top: 2px; flex-shrink: 0; }
-.msg-save-btn:hover { border-color: var(--accent); color: var(--accent) !important; }
-.msg-save-btn.saved { border-color: var(--accent); color: var(--accent) !important; }
-.save-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--accent); color: #0d0d0d !important; padding: 10px 20px; border-radius: 100px; font-family: 'Space Mono', monospace; font-size: 0.75rem; font-weight: 700; transition: transform 0.3s ease; z-index: 999; white-space: nowrap; }
-.save-toast.show { transform: translateX(-50%) translateY(0); }
+  .typing { display: flex; gap: 4px; align-items: center; padding: 14px 16px; }
+  .typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: ty 1.2s infinite; }
+  .typing span:nth-child(2) { animation-delay: 0.18s; }
+  .typing span:nth-child(3) { animation-delay: 0.36s; }
+  @keyframes ty { 0%,60%,100%{transform:translateY(0);opacity:0.3} 30%{transform:translateY(-5px);opacity:1} }
 
-@media (max-width: 768px) {
-  .sidebar { display: none; }
-  .tabs-inner { padding: 0 10px; gap: 2px; }
-  .tabs-logo { font-size: 1.15rem; padding: 11px 0; }
-  .tab { padding: 10px 8px; font-size: 0.52rem; gap: 2px; }
-  .tab-icon { font-size: 0.85rem; }
-  .upgrade-link { font-size: 0.55rem; padding: 5px 8px; letter-spacing: 0; }
-  .clear-btn { display: none; }
-  .bubble { max-width: 88%; }
-  .welcome { padding: 20px; }
-  .welcome p { padding: 0 8px; }
-  .msgs { padding: 16px 14px 12px; }
-  .input-zone { padding: 8px 12px calc(12px + env(safe-area-inset-bottom)); }
-}
+  /* INPUT */
+  .input-area { padding: 14px 26px 22px; flex-shrink: 0; }
+  .input-wrap { display: flex; gap: 8px; align-items: flex-end; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 9px 9px 9px 16px; transition: border-color 0.2s, box-shadow 0.2s; }
+  .input-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+  #inp { flex: 1; background: none; border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 0.875rem; color: var(--text); resize: none; line-height: 1.5; max-height: 110px; min-height: 22px; }
+  #inp::placeholder { color: var(--muted); }
+  .send { width: 36px; height: 36px; border-radius: 9px; background: var(--accent); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+  .send:hover { background: #d4fc40; transform: scale(1.05); }
+  .send:active { transform: scale(0.97); }
+  .send svg { width: 16px; height: 16px; fill: #0a0a0a; }
+  .send:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .input-hint { font-size: 0.62rem; color: var(--muted); text-align: center; margin-top: 8px; font-family: 'Space Mono', monospace; }
 </style>
 </head>
 <body>
-
-<div class="tabs">
-  <div class="tabs-inner">
-    <a href="sweatiq-landing.html" class="tabs-logo">SWEATIQ</a>
-    <nav class="tabs-nav">
-      <a href="sweatiq-landing.html" class="tab"><span class="tab-icon">🏠</span>Home</a>
-      <a href="sweatiq-chat.html" class="tab active"><span class="tab-icon">💬</span>Coach</a>
-      <a href="sweatiq-progress.html" class="tab"><span class="tab-icon">📊</span>Progress</a>
-      <a href="sweatiq-pricing.html" class="tab"><span class="tab-icon">⚡</span>Plans</a>
-    </nav>
-    <div class="tabs-right">
-      <a href="sweatiq-pricing.html" class="upgrade-link">UPGRADE ⚡</a>
-      <button class="clear-btn" onclick="clearChat()">Clear</button>
-    </div>
-  </div>
-</div>
-
-<div class="layout">
+<div class="app">
   <aside class="sidebar">
-    <div class="sb-sec">
-      <div class="sb-label">Training</div>
-      <button class="sb-btn" onclick="sendMsg('Build me a 4-week workout plan')"><span class="sb-icon">🏋️</span>Workout Plans</button>
-      <button class="sb-btn" onclick="sendMsg('Give me a HIIT session for today')"><span class="sb-icon">🔥</span>HIIT & Cardio</button>
-      <button class="sb-btn" onclick="sendMsg('How do I build muscle effectively?')"><span class="sb-icon">💪</span>Muscle Building</button>
-      <button class="sb-btn" onclick="sendMsg('Help me train for fat loss')"><span class="sb-icon">⚡</span>Fat Loss</button>
+    <div class="logo-area">
+      <div class="logo">SweatIQ</div>
+      <div class="logo-sub">AI Fitness Coach</div>
     </div>
-    <div class="sb-div"></div>
-    <div class="sb-sec">
-      <div class="sb-label">Nutrition</div>
-      <button class="sb-btn" onclick="sendMsg('Create a high-protein meal plan for me')"><span class="sb-icon">🥗</span>Meal Plans</button>
-      <button class="sb-btn" onclick="sendMsg('What should I eat before and after working out?')"><span class="sb-icon">🍌</span>Pre/Post Workout</button>
-      <button class="sb-btn" onclick="sendMsg('Explain macros and how to track them')"><span class="sb-icon">📊</span>Macros & Calories</button>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Training</div>
+      <button class="quick-btn" onclick="sendMsg('Build me a 4-week workout plan')"><span class="icon">🏋️</span> Workout Plans</button>
+      <button class="quick-btn" onclick="sendMsg('Give me a HIIT cardio session for today')"><span class="icon">🔥</span> HIIT &amp; Cardio</button>
+      <button class="quick-btn" onclick="sendMsg('How do I build muscle effectively?')"><span class="icon">💪</span> Muscle Building</button>
+      <button class="quick-btn" onclick="sendMsg('Help me train for fat loss')"><span class="icon">⚡</span> Fat Loss</button>
     </div>
-    <div class="sb-div"></div>
-    <div class="sb-sec">
-      <div class="sb-label">Recovery</div>
-      <button class="sb-btn" onclick="sendMsg('What are the best recovery techniques?')"><span class="sb-icon">🧘</span>Recovery Tips</button>
-      <button class="sb-btn" onclick="sendMsg('How much sleep do I need to build muscle?')"><span class="sb-icon">😴</span>Sleep & Rest</button>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Nutrition</div>
+      <button class="quick-btn" onclick="sendMsg('Create a high-protein meal plan for me')"><span class="icon">🥗</span> Meal Plans</button>
+      <button class="quick-btn" onclick="sendMsg('What should I eat before and after working out?')"><span class="icon">🍌</span> Pre/Post Workout</button>
+      <button class="quick-btn" onclick="sendMsg('Explain macros and how to track them')"><span class="icon">📊</span> Macros &amp; Calories</button>
     </div>
-    <div class="sb-bottom">
-      <div class="user-card">
-        <div class="user-av">YOU</div>
-        <div><div class="user-nm">Athlete</div><div class="user-plan" id="plan-label">Free Plan</div></div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Recovery</div>
+      <button class="quick-btn" onclick="sendMsg('What are the best recovery techniques?')"><span class="icon">🧘</span> Recovery Tips</button>
+      <button class="quick-btn" onclick="sendMsg('How much sleep do I need to build muscle?')"><span class="icon">😴</span> Sleep &amp; Rest</button>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="user-pill">
+        <div class="avatar">YOU</div>
+        <div class="user-info">
+          <div class="user-name">Athlete</div>
+          <div class="user-plan">PRO PLAN</div>
+        </div>
       </div>
     </div>
   </aside>
 
   <main class="main">
-    <div class="msgs" id="msgs">
+    <div class="topbar">
+      <div class="chat-title">AI COACH</div>
+      <div class="status-pill"><div class="dot"></div>Online &amp; Ready</div>
+    </div>
+
+    <div class="messages" id="msgs">
       <div class="welcome" id="welcome">
-        <div class="welcome-trophy">🏆</div>
-        <h1>YOUR <b>PERSONAL</b><br>FITNESS AI</h1>
-        <p>Expert workout plans, nutrition advice, and coaching tailored to your goals — available 24/7.</p>
+        <div class="welcome-emoji">🏆</div>
+        <h1>YOUR <span>PERSONAL</span><br>FITNESS AI</h1>
+        <p>Get expert workout plans, nutrition advice, and coaching tailored to your goals — available 24/7.</p>
         <div class="chips">
           <div class="chip" onclick="sendMsg('I want to lose 20 lbs. Where do I start?')">🎯 Lose weight</div>
           <div class="chip" onclick="sendMsg('I want to build muscle. Make me a plan.')">💪 Build muscle</div>
           <div class="chip" onclick="sendMsg('I am a complete beginner. Create my first workout routine.')">🌱 Beginner plan</div>
+          <div class="chip" onclick="sendMsg('I run 5K already. Help me get to a half marathon.')">🏃 Running goals</div>
           <div class="chip" onclick="sendMsg('Design a home workout with no equipment.')">🏠 Home workout</div>
-          <div class="chip" onclick="sendMsg('Help me train for a half marathon.')">🏃 Running goals</div>
         </div>
       </div>
     </div>
 
-    <div class="input-zone">
-      <div class="input-box">
-        <textarea id="inp" rows="1" placeholder="Ask your AI coach anything…" onkeydown="handleKey(event)" oninput="autoSize(this)"></textarea>
-        <button class="send-btn" id="sendBtn" onclick="sendMsg()">
+    <div class="input-area">
+      <div class="input-wrap">
+        <textarea id="inp" rows="1" placeholder="Ask your AI coach anything…" onkeydown="handleKey(event)" oninput="resize(this)"></textarea>
+        <button class="send" id="sendBtn" onclick="sendMsg()" title="Send">
           <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
       </div>
-      <p class="input-hint">SweatIQ AI · Not a substitute for medical advice</p>
+      <div class="input-hint">SweatIQ AI · Powered by advanced language models · Not a substitute for medical advice</div>
     </div>
   </main>
 </div>
 
 <script>
-const SYS = `You are SweatIQ, an elite AI personal fitness coach. Be knowledgeable, motivating, and highly practical.
-- Use **bold** for exercise names, key numbers, and important terms
-- Use ### for section headings in longer responses
-- Use bullet points for exercise lists and meal plans
-- Always include sets, reps, rest times, macros, and specific timings
-- Keep responses focused and actionable
-- Ask smart clarifying questions when needed
-- Workout format: **Exercise Name** — 3 sets × 10 reps @ 60s rest
-You are SweatIQ. Never reference Claude or Anthropic.`;
+const SYSTEM = `You are SweatIQ, an elite AI fitness coach. You are knowledgeable, motivating, and highly practical.
 
-let history = [], busy = false;
+Personality:
+- Energetic and direct, like a world-class personal trainer
+- Use **bold** for key terms, exercise names, numbers, and important points
+- Use ### headings to organize multi-section responses
+- Use bullet points for exercises, meal plans, and tips
+- Be specific: always give sets, reps, rest times, macros, and timings
+- Occasionally use brief motivational phrases — keep them punchy, not cheesy
+- Be concise and actionable
 
-function autoSize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
-function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } }
+Format workouts like:
+- **Exercise Name** — 3x10 @ 60s rest
+- Add brief technique notes where useful
 
-async function sendMsg(preset) {
+Ask clarifying questions when needed (fitness level, equipment, goals, dietary restrictions).
+
+You are SweatIQ, not Claude. Never mention Claude or Anthropic.`;
+
+let history = [];
+let busy = false;
+
+function resize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 110) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+}
+
+async function sendMsg(override) {
   if (busy) return;
   const inp = document.getElementById('inp');
-  const text = (preset || inp.value).trim();
+  const text = (override || inp.value).trim();
   if (!text) return;
+
   const welcome = document.getElementById('welcome');
   if (welcome) welcome.remove();
-  inp.value = ''; inp.style.height = 'auto';
+
+  inp.value = '';
+  inp.style.height = 'auto';
   setBusy(true);
-  addMsg('user', text);
+  appendMsg('user', text);
   history.push({ role: 'user', content: text });
-  const tid = addTyping();
+
+  const tid = appendTyping();
+
   try {
     const res = await fetch('https://sweatiq-production.up.railway.app/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: SYS, messages: history, sessionId: 'sweatiq-user' })
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYSTEM,
+        messages: history
+      })
     });
-    const d = await res.json();
+    const data = await res.json();
     removeTyping(tid);
-    const reply = d.reply || (d.content || []).map(b => b.text || '').join('') || 'Something went wrong. Please try again.';
+    const reply = data.reply || (data.content || []).map(b => b.text || '').join('') || 'Something went wrong. Try again.';
     history.push({ role: 'assistant', content: reply });
-    addMsg('ai', reply);
-  } catch {
+    appendMsg('ai', reply);
+  } catch(err) {
     removeTyping(tid);
-    addMsg('ai', '**Connection error.** Please check your internet and try again.');
+    appendMsg('ai', '**Connection error.** Please check your connection and try again.');
   }
   setBusy(false);
 }
 
-function clearChat() {
-  history = [];
-  const msgs = document.getElementById('msgs');
-  msgs.innerHTML = '';
-  const w = document.createElement('div');
-  w.className = 'welcome'; w.id = 'welcome';
-  w.innerHTML = `<div class="welcome-trophy">🏆</div><h1>YOUR <b>PERSONAL</b><br>FITNESS AI</h1><p>Expert workout plans, nutrition advice, and coaching — available 24/7.</p><div class="chips"><div class="chip" onclick="sendMsg('I want to lose 20 lbs. Where do I start?')">🎯 Lose weight</div><div class="chip" onclick="sendMsg('I want to build muscle. Make me a plan.')">💪 Build muscle</div><div class="chip" onclick="sendMsg('I am a complete beginner. Create my first workout routine.')">🌱 Beginner plan</div><div class="chip" onclick="sendMsg('Design a home workout with no equipment.')">🏠 Home workout</div></div>`;
-  msgs.appendChild(w);
+function setBusy(v) {
+  busy = v;
+  document.getElementById('sendBtn').disabled = v;
 }
 
-function setBusy(v) { busy = v; document.getElementById('sendBtn').disabled = v; }
-
-function addMsg(role, text) {
+function appendMsg(role, text) {
   const msgs = document.getElementById('msgs');
   const row = document.createElement('div');
   row.className = 'msg-row' + (role === 'user' ? ' user' : '');
+
   const av = document.createElement('div');
-  av.className = 'msg-av ' + (role === 'ai' ? 'ai' : 'me');
+  av.className = 'msg-av ' + (role === 'ai' ? 'ai' : 'usr');
   av.textContent = role === 'ai' ? 'AP' : 'ME';
-  const b = document.createElement('div');
-  b.className = 'bubble ' + role;
-  b.innerHTML = renderMd(text);
-  row.appendChild(av); row.appendChild(b);
-  if (role === 'ai') {
-    const saveBtn = document.createElement('button');
-    saveBtn.className = 'msg-save-btn';
-    saveBtn.textContent = '💾';
-    saveBtn.title = 'Save this response';
-    saveBtn.onclick = () => saveAiMessage(text, saveBtn);
-    row.appendChild(saveBtn);
-  }
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble ' + role;
+  bubble.innerHTML = fmt(text);
+
+  row.appendChild(av);
+  row.appendChild(bubble);
   msgs.appendChild(row);
   msgs.scrollTop = msgs.scrollHeight;
 }
 
-function addTyping() {
+function appendTyping() {
   const msgs = document.getElementById('msgs');
   const id = 'ty' + Date.now();
   const row = document.createElement('div');
-  row.id = id; row.className = 'typing-row';
+  row.id = id; row.className = 'msg-row';
   const av = document.createElement('div');
   av.className = 'msg-av ai'; av.textContent = 'AP';
-  const d = document.createElement('div');
-  d.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
-  row.appendChild(av); row.appendChild(d);
+  const b = document.createElement('div');
+  b.className = 'bubble ai';
+  b.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+  row.appendChild(av); row.appendChild(b);
   msgs.appendChild(row);
   msgs.scrollTop = msgs.scrollHeight;
   return id;
 }
 
-function removeTyping(id) { const el = document.getElementById(id); if (el) el.remove(); }
-
-// Check if user just upgraded via Stripe
-function checkUpgradeStatus() {
-  const params = new URLSearchParams(window.location.search);
-  const stored = localStorage.getItem('sweatiq_plan');
-  
-  if (params.get('upgraded') === 'true') {
-    localStorage.setItem('sweatiq_plan', 'pro');
-    document.getElementById('plan-label').textContent = 'Pro Plan';
-    // Clean URL without reloading
-    window.history.replaceState({}, '', window.location.pathname);
-  } else if (stored === 'pro') {
-    document.getElementById('plan-label').textContent = 'Pro Plan';
-  }
-}
-checkUpgradeStatus();
-
-function saveAiMessage(text, btn) {
-  // Auto-detect type from content
-  const lower = text.toLowerCase();
-  let type = 'note';
-  if (lower.includes('sets') || lower.includes('reps') || lower.includes('workout') || lower.includes('exercise')) type = 'workout';
-  else if (lower.includes('meal') || lower.includes('protein') || lower.includes('calories') || lower.includes('breakfast')) type = 'meal';
-
-  // Generate title from first line
-  const firstLine = text.split('\n')[0].replace(/[#*]/g, '').trim().slice(0, 60) || 'Saved from Coach';
-
-  const items = JSON.parse(localStorage.getItem('sweatiq_saved') || '[]');
-  items.unshift({ type, title: firstLine, body: text, date: new Date().toLocaleDateString() });
-  localStorage.setItem('sweatiq_saved', JSON.stringify(items));
-
-  btn.textContent = '✅';
-  btn.classList.add('saved');
-
-  // Show toast
-  const toast = document.getElementById('saveToast');
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2500);
+function removeTyping(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
 }
 
-function renderMd(t) {
-  let s = t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/### (.+)/g,'<h3>$1</h3>')
-    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g,'<em>$1</em>');
-  s = s.replace(/^[-•] (.+)/gm,'<li>$1</li>');
+function fmt(text) {
+  let s = text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/### (.+)/g, '<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+  // Convert list items
+  s = s.replace(/^[-*] (.+)/gm, '<li>$1</li>');
+  s = s.replace(/(<li>[\s\S]+?<\/li>)(?=\s*(?:<li>|$))/g, (m) => '<ul>' + m + '</ul>');
+
+  // Paragraphs
   s = s.split('\n\n').map(p => {
-    if (p.includes('<h3>')) return p;
-    if (p.includes('<li>')) return '<ul>' + p + '</ul>';
-    return '<p>' + p.replace(/\n/g,'<br>') + '</p>';
+    if (p.startsWith('<h3>') || p.startsWith('<ul>') || p.startsWith('<li>')) return p;
+    return '<p>' + p.replace(/\n/g, '<br>') + '</p>';
   }).join('');
+
   return s;
-}
-</script>
-<div class="save-toast" id="saveToast">Saved to Progress! <a href="sweatiq-progress.html" style="color:#0d0d0d;margin-left:8px;font-weight:700;">View →</a></div>
-
-<script>
-
-// AI Disclosure — show once per session
-if (!sessionStorage.getItem('ai_disclosed')) {
-  sessionStorage.setItem('ai_disclosed', 'true');
-  setTimeout(() => {
-    const d = document.createElement('div');
-    d.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1e1e1e;border:1px solid #2e2e2e;color:#d0d0c8;padding:12px 18px;border-radius:8px;font-size:0.72rem;font-family:Outfit,sans-serif;max-width:340px;text-align:center;z-index:500;line-height:1.5;';
-    d.innerHTML = '🤖 <strong style="color:#c8f135;">AI Disclosure:</strong> SweatIQ uses Anthropic\'s Claude AI. Not a licensed trainer or medical professional. <a href="sweatiq-privacy.html" style="color:#c8f135;">Learn more</a>';
-    document.body.appendChild(d);
-    setTimeout(() => d.style.display='none', 6000);
-  }, 2000);
-}
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
-  });
 }
 </script>
 </body>

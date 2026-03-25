@@ -158,7 +158,7 @@ body { height: 100%; background: #0d0d0d !important; color: #ffffff; font-family
     <div class="sb-bottom">
       <div class="user-card">
         <div class="user-av">YOU</div>
-        <div><div class="user-nm">Athlete</div><div class="user-plan">Free Plan</div></div>
+        <div><div class="user-nm">Athlete</div><div class="user-plan" id="plan-label">Free Plan</div></div>
       </div>
     </div>
   </aside>
@@ -280,6 +280,22 @@ function addTyping() {
 }
 
 function removeTyping(id) { const el = document.getElementById(id); if (el) el.remove(); }
+
+// Check if user just upgraded via Stripe
+function checkUpgradeStatus() {
+  const params = new URLSearchParams(window.location.search);
+  const stored = localStorage.getItem('sweatiq_plan');
+  
+  if (params.get('upgraded') === 'true') {
+    localStorage.setItem('sweatiq_plan', 'pro');
+    document.getElementById('plan-label').textContent = 'Pro Plan';
+    // Clean URL without reloading
+    window.history.replaceState({}, '', window.location.pathname);
+  } else if (stored === 'pro') {
+    document.getElementById('plan-label').textContent = 'Pro Plan';
+  }
+}
+checkUpgradeStatus();
 
 function renderMd(t) {
   let s = t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')

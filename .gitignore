@@ -1,0 +1,15 @@
+# Environment variables — NEVER commit these
+.env
+.env.local
+.env.production
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Mac
+.DS_Store
+
+# Logs
+*.log
+logs/

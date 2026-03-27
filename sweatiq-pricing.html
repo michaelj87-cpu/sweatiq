@@ -219,23 +219,186 @@ footer { border-top: 1px solid #2e2e2e; padding: 28px 24px; background: #0d0d0d 
     <a href="sweatiq-terms.html">Terms</a>
     <a href="sweatiq-support.html">Support</a>
   </div>
-  <p class="footer-copy">© 2025 SweatIQ AI · All rights reserved</p>
+  <p class="footer-copy">© 2025 SweatIQ AI · All rights reserved · <span id="restore-link" style="display:none;text-decoration:underline;cursor:pointer;" onclick="restorePurchases()">Restore Purchases</span></p>
 </footer>
 
 <script>
 const BACKEND = 'https://sweatiq-production.up.railway.app';
 let annual = false;
 
+// ─── PLATFORM DETECTION ──────────────────────────────────────
+// True when running inside the native iOS Capacitor wrapper
+const IS_NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform());
+
+// ⚠️ REPLACE THIS with your iOS API key from app.revenuecat.com
+const RC_API_KEY = 'test_nINMcSKKkPzKcncQXNAVmGWDEQi';
+
+// RevenueCat offering identifiers — set up matching ones in RevenueCat dashboard
+const RC_ENTITLEMENTS = { pro: 'pro', elite: 'elite' };
+
+let rcPurchases = null;
+let rcOfferings = null;
+let iapReady = false;
+
+// ─── REVENUECAT INIT ──────────────────────────────────────────
+async function initAppleIAP() {
+  if (!IS_NATIVE) return;
+
+  // Wait for Capacitor bridge to be ready
+  let attempts = 0;
+  while (!(window.Capacitor?.Plugins?.Purchases) && attempts < 20) {
+    await new Promise(r => setTimeout(r, 250));
+    attempts++;
+  }
+
+  rcPurchases = window.Capacitor?.Plugins?.Purchases;
+  if (!rcPurchases) { console.warn('RevenueCat plugin not available'); return; }
+
+  try {
+    // Configure RevenueCat with your iOS API key
+    await rcPurchases.configure({ apiKey: RC_API_KEY });
+
+    // Fetch available offerings (subscription packages) from RevenueCat
+    const result = await rcPurchases.getOfferings();
+    rcOfferings = result.offerings;
+
+    // Update prices on screen with real App Store prices
+    const current = rcOfferings?.current;
+    if (current) {
+      const moPackage = current.monthly || current.availablePackages?.find(p => p.packageType === 'MONTHLY');
+      const yrPackage = current.annual  || current.availablePackages?.find(p => p.packageType === 'ANNUAL');
+      // Show real localised price from App Store (strip currency symbol for the span)
+      if (moPackage?.product?.priceString) {
+        document.getElementById('pro-p').textContent = moPackage.product.priceString.replace(/[^0-9.]/g, '');
+      }
+    }
+
+    // Check if user already has an active subscription and unlock accordingly
+    const { customerInfo } = await rcPurchases.getCustomerInfo();
+    unlockFromCustomerInfo(customerInfo);
+
+    iapReady = true;
+    console.log('RevenueCat ready');
+  } catch (err) {
+    console.error('RevenueCat init error:', err);
+  }
+}
+
+// ─── UNLOCK ACCESS FROM CUSTOMER INFO ────────────────────────
+function unlockFromCustomerInfo(customerInfo) {
+  const active = customerInfo?.entitlements?.active || {};
+  if (active[RC_ENTITLEMENTS.elite]) {
+    localStorage.setItem('sweatiq_plan', 'elite');
+    localStorage.setItem('sweatiq_plan_source', 'apple_iap');
+  } else if (active[RC_ENTITLEMENTS.pro]) {
+    localStorage.setItem('sweatiq_plan', 'pro');
+    localStorage.setItem('sweatiq_plan_source', 'apple_iap');
+  }
+}
+
+// ─── PURCHASE VIA REVENUECAT ──────────────────────────────────
+async function purchaseWithApple(plan, btn) {
+  if (!iapReady || !rcPurchases) {
+    alert('Store is loading. Please try again in a moment.');
+    return;
+  }
+
+  // Pick the right package from the current offering
+  const cycle = annual ? 'ANNUAL' : 'MONTHLY';
+  const current = rcOfferings?.current;
+  if (!current) { alert('No packages available. Please try again.'); return; }
+
+  // Filter packages by plan name and billing cycle
+  let pkg = current.availablePackages?.find(p => {
+    const id = (p.identifier || '').toLowerCase();
+    return id.includes(plan) && p.packageType === cycle;
+  });
+
+  // Fallback: use monthly or annual shortcut if custom identifiers aren't set
+  if (!pkg) {
+    pkg = annual ? current.annual : current.monthly;
+  }
+
+  if (!pkg) { alert('Product not found. Check RevenueCat dashboard setup.'); return; }
+
+  const originalText = btn.textContent;
+  btn.textContent = 'Opening…';
+  btn.disabled = true;
+
+  try {
+    const { customerInfo } = await rcPurchases.purchasePackage({ aPackage: pkg });
+    unlockFromCustomerInfo(customerInfo);
+
+    // Determine plan granted from entitlements
+    const active = customerInfo?.entitlements?.active || {};
+    const grantedPlan = active[RC_ENTITLEMENTS.elite] ? 'elite' : 'pro';
+    showPurchaseSuccess(grantedPlan);
+  } catch (err) {
+    if (err?.code !== 'PURCHASE_CANCELLED') {
+      console.error('Purchase error:', err);
+      alert('Purchase could not be completed. Please try again.');
+    }
+  } finally {
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
+}
+
+// ─── RESTORE PURCHASES (Apple requires this button) ───────────
+async function restorePurchases() {
+  if (!IS_NATIVE || !rcPurchases) return;
+  try {
+    const { customerInfo } = await rcPurchases.restorePurchases();
+    unlockFromCustomerInfo(customerInfo);
+    const active = customerInfo?.entitlements?.active || {};
+    if (Object.keys(active).length > 0) {
+      alert('Purchases restored successfully!');
+    } else {
+      alert('No previous purchases found for this Apple ID.');
+    }
+  } catch (err) {
+    alert('Could not restore purchases. Please try again.');
+  }
+}
+
+// ─── SHOW SUCCESS ─────────────────────────────────────────────
+function showPurchaseSuccess(plan) {
+  document.body.insertAdjacentHTML('beforeend', `
+    <div id="success-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;">
+      <div style="background:#1a1a1a;border:1px solid #c8f135;padding:40px 32px;max-width:360px;width:100%;text-align:center;">
+        <div style="font-size:3rem;margin-bottom:16px;">🏆</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.05em;color:#c8f135;margin-bottom:8px;">YOU'RE ${plan.toUpperCase()}!</div>
+        <p style="color:#e0e0d8;font-size:0.88rem;margin-bottom:24px;line-height:1.6;">Welcome to unlimited AI coaching. Let's get to work.</p>
+        <a href="sweatiq-chat.html" style="display:block;background:#c8f135;color:#0d0d0d;font-family:'Space Mono',monospace;font-weight:700;padding:14px;border-radius:9px;text-decoration:none;font-size:0.84rem;">START COACHING →</a>
+      </div>
+    </div>
+  `);
+}
+
+// ─── BILLING TOGGLE ───────────────────────────────────────────
 function toggleBilling() {
   annual = document.getElementById('tog').checked;
   document.getElementById('lbl-mo').classList.toggle('on', !annual);
   document.getElementById('lbl-yr').classList.toggle('on', annual);
-  document.getElementById('pro-p').textContent = annual ? '12' : '19';
-  document.getElementById('elite-p').textContent = annual ? '25' : '39';
+
+  // On native, prices are loaded from the App Store — keep them as-is
+  if (!IS_NATIVE) {
+    document.getElementById('pro-p').textContent = annual ? '12' : '19';
+    document.getElementById('elite-p').textContent = annual ? '25' : '39';
+  }
 }
 
+// ─── CHECKOUT ENTRY POINT ─────────────────────────────────────
 async function startCheckout(plan) {
   const btn = event.target;
+
+  // Native iOS → Apple IAP
+  if (IS_NATIVE) {
+    await purchaseWithApple(plan, btn);
+    return;
+  }
+
+  // Web → Stripe checkout (unchanged)
   const originalText = btn.textContent;
   btn.textContent = 'Loading...';
   btn.disabled = true;
@@ -247,14 +410,14 @@ async function startCheckout(plan) {
       body: JSON.stringify({
         plan: plan,
         billingCycle: annual ? 'annual' : 'monthly',
-        sessionId: 'user-' + Date.now()
+        sessionId: localStorage.getItem('sweatiq_sid') || 'user-' + Date.now()
       })
     });
 
     const data = await res.json();
 
     if (data.url) {
-      window.location.href = data.url;  // Redirect to Stripe checkout
+      window.location.href = data.url;
     } else {
       alert('Something went wrong. Please try again.');
       btn.textContent = originalText;
@@ -266,6 +429,16 @@ async function startCheckout(plan) {
     btn.disabled = false;
   }
 }
+
+// Init Apple IAP on page load (no-op on web)
+window.addEventListener('load', () => {
+  initAppleIAP();
+  // Show Restore Purchases link only inside the native app (Apple requirement)
+  if (IS_NATIVE) {
+    const el = document.getElementById('restore-link');
+    if (el) el.style.display = 'inline';
+  }
+});
 </script>
 
 <script>

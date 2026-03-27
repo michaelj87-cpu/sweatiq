@@ -186,6 +186,16 @@ You are SweatIQ, not Claude. Never mention Claude or Anthropic.`;
 let history = [];
 let busy = false;
 
+// Persistent session ID so the backend can track per-user message counts
+const SESSION_ID = (() => {
+  let id = localStorage.getItem('sweatiq_sid');
+  if (!id) {
+    id = 'u_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+    localStorage.setItem('sweatiq_sid', id);
+  }
+  return id;
+})();
+
 function resize(el) {
   el.style.height = 'auto';
   el.style.height = Math.min(el.scrollHeight, 110) + 'px';
@@ -217,15 +227,20 @@ async function sendMsg(override) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: SYSTEM,
-        messages: history
+        messages: history,
+        sessionId: SESSION_ID
       })
     });
     const data = await res.json();
     removeTyping(tid);
-    const reply = data.reply || (data.content || []).map(b => b.text || '').join('') || 'Something went wrong. Try again.';
+    // Handle free plan daily limit reached
+    if (res.status === 402 && data.error === 'free_limit_reached') {
+      history.pop(); // remove the unsent user message from history
+      appendMsg('ai', `**Daily limit reached.** ${data.message || 'Upgrade to Pro for unlimited access.'} <a href="sweatiq-pricing.html" style="color:var(--accent);text-decoration:underline">Upgrade to Pro →</a>`);
+      setBusy(false);
+      return;
+    }
+    const reply = data.reply || 'Something went wrong. Try again.';
     history.push({ role: 'assistant', content: reply });
     appendMsg('ai', reply);
   } catch(err) {
@@ -247,7 +262,7 @@ function appendMsg(role, text) {
 
   const av = document.createElement('div');
   av.className = 'msg-av ' + (role === 'ai' ? 'ai' : 'usr');
-  av.textContent = role === 'ai' ? 'AP' : 'ME';
+  av.textContent = role === 'ai' ? 'SQ' : 'ME';
 
   const bubble = document.createElement('div');
   bubble.className = 'bubble ' + role;
@@ -265,7 +280,7 @@ function appendTyping() {
   const row = document.createElement('div');
   row.id = id; row.className = 'msg-row';
   const av = document.createElement('div');
-  av.className = 'msg-av ai'; av.textContent = 'AP';
+  av.className = 'msg-av ai'; av.textContent = 'SQ';
   const b = document.createElement('div');
   b.className = 'bubble ai';
   b.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
@@ -287,9 +302,9 @@ function fmt(text) {
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>');
 
-  // Convert list items
+  // Convert list items, then group consecutive <li> elements into a single <ul>
   s = s.replace(/^[-*] (.+)/gm, '<li>$1</li>');
-  s = s.replace(/(<li>[\s\S]+?<\/li>)(?=\s*(?:<li>|$))/g, (m) => '<ul>' + m + '</ul>');
+  s = s.replace(/((?:<li>[^\n]*<\/li>\n?)+)/g, '<ul>$1</ul>');
 
   // Paragraphs
   s = s.split('\n\n').map(p => {
